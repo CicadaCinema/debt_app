@@ -4,30 +4,39 @@ import 'package:firebase_core/firebase_core.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
+  runApp(
+    MaterialApp(
+      title: 'Debt App',
+      theme: ThemeData(
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+      primarySwatch: Colors.green,
+      buttonTheme: ButtonThemeData(
+      buttonColor: Colors.green,
+      textTheme: ButtonTextTheme.primary,
+      ),
+      ),
+      initialRoute: '/gateway',
+      routes: {
+        '/gateway': (context) => MyApp(),
+        '/main': (context) => MainMenu(),
+      },
+    )
+  );
 }
 
 class MyApp extends StatelessWidget {
-  final String appTitle = 'Debt App';
-
   Widget messageScreen(String titleText, IconData icon, Color iconColour, String iconText) {
-    return MaterialApp(
-      title: appTitle,
-      theme: ThemeData(
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-        primarySwatch: Colors.green,
-      ),
-      home: Scaffold(
-          appBar: AppBar(
-            title: Text(titleText),
-          ),
-          body: Center(
-            child:
-            Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Icon(icon, size: 64, color: iconColour),
-              Text(iconText, textScaleFactor: 2.0),
-            ]),
-          )),
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(titleText),
+        ),
+        body: Center(
+          child:
+          Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Icon(icon, size: 64, color: iconColour),
+            Text(iconText, textScaleFactor: 2.0),
+          ]),
+        )
     );
   }
 
@@ -40,38 +49,24 @@ class MyApp extends StatelessWidget {
       builder: (context, snapshot) {
         // check for errors
         if (snapshot.hasError) {
-          return messageScreen('Firebase Error', Icons.error, Colors.orange,
-              'Error connecting to Firebase');
+          return messageScreen('Firebase Error', Icons.error, Colors.orange, 'Error connecting to Firebase');
         }
 
         // once complete, show main screen
         if (snapshot.connectionState == ConnectionState.done) {
-          return MaterialApp(
-            title: appTitle,
-            theme: ThemeData(
-              visualDensity: VisualDensity.adaptivePlatformDensity,
-              primarySwatch: Colors.green,
-              buttonTheme: ButtonThemeData(
-                buttonColor: Colors.green,
-                textTheme: ButtonTextTheme.primary,
-              ),
-            ),
-            home: GatewayPage(title: 'Gateway'),
+          return Scaffold(
+            body: GatewayPage(title: 'Gateway'),
           );
         }
 
         // show loading screen while waiting for initialization to complete
-        return messageScreen('Connecting to Firebase', Icons.refresh,
-            Colors.green, 'Loading ...');
-        ;
+        return messageScreen('Connecting to Firebase', Icons.refresh, Colors.green, 'Loading ...');
       },
     );
   }
 }
 
-class GatewayPage extends StatefulWidget {
-  GatewayPage({Key key, this.title}) : super(key: key);
-
+class GatewayPage extends StatefulWidget {GatewayPage({Key key, this.title}) : super(key: key);
   final String title;
 
   @override
@@ -95,6 +90,7 @@ class _GatewayPageState extends State<GatewayPage> {
                 if (value == '') {
                   return 'Field must be non-empty';
                 }
+                _username=value;
                 return null;
               },
               decoration: InputDecoration(labelText: 'Username'),
@@ -104,6 +100,7 @@ class _GatewayPageState extends State<GatewayPage> {
                 if (value == '') {
                   return 'Field must be non-empty';
                 }
+                _password=value;
                 return null;
               },
               decoration: InputDecoration(labelText: 'Password'),
@@ -112,10 +109,8 @@ class _GatewayPageState extends State<GatewayPage> {
               child: Text('Submit'),
               onPressed: () {
                 if (_formKey.currentState.validate()) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MainMenu()),
-                  );
+                  // if the form is valid, go to main route
+                  Navigator.pushReplacementNamed(context, '/main');
                 }
               },
             )
@@ -158,7 +153,7 @@ class _MainMenuState extends State<MainMenu> {
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacementNamed(context, '/gateway');
           },
           child: Text('Go back!'),
         ),
