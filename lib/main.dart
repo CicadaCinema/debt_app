@@ -10,8 +10,7 @@ void main() {
 class MyApp extends StatelessWidget {
   final String appTitle = 'Debt App';
 
-  Widget messageScreen(
-      String titleText, IconData icon, Color iconColour, String iconText) {
+  Widget messageScreen(String titleText, IconData icon, Color iconColour, String iconText) {
     return MaterialApp(
       title: appTitle,
       theme: ThemeData(
@@ -24,7 +23,7 @@ class MyApp extends StatelessWidget {
           ),
           body: Center(
             child:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               Icon(icon, size: 64, color: iconColour),
               Text(iconText, textScaleFactor: 2.0),
             ]),
@@ -78,7 +77,6 @@ class GatewayPage extends StatefulWidget {
   @override
   _GatewayPageState createState() => _GatewayPageState();
 }
-
 class _GatewayPageState extends State<GatewayPage> {
   final _formKey = GlobalKey<FormState>();
 
@@ -114,23 +112,9 @@ class _GatewayPageState extends State<GatewayPage> {
               child: Text('Submit'),
               onPressed: () {
                 if (_formKey.currentState.validate()) {
-                  showDialog<void>(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('Error'),
-                        content: Text('Text'),
-                        actions: <Widget>[
-                          TextButton(
-                            child: Text('OK'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      );
-                    },
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MainMenu()),
                   );
                 }
               },
@@ -153,6 +137,30 @@ class _GatewayPageState extends State<GatewayPage> {
           children: <Widget>[
             loginForm(),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class MainMenu extends StatefulWidget {
+  @override
+  _MainMenuState createState() => _MainMenuState();
+}
+
+class _MainMenuState extends State<MainMenu> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Second Route"),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text('Go back!'),
         ),
       ),
     );
