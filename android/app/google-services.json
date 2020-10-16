@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "202685506739",
+    "firebase_url": "https://debtapp-dd448.firebaseio.com",
+    "project_id": "debtapp-dd448",
+    "storage_bucket": "debtapp-dd448.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:202685506739:android:8342846c44e81b0817bcc6",
+        "android_client_info": {
+          "package_name": "com.example.debt_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "202685506739-tlbmdem2s97uultnhuib4dscgjcmv7sr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBta82CuopDvoSF_UeDVkeHh4H7DnxT-MM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "202685506739-tlbmdem2s97uultnhuib4dscgjcmv7sr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
