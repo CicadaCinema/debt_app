@@ -6,14 +6,14 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     MaterialApp(
-      title: 'Debt App',
+      //title: 'Debt App',
       theme: ThemeData(
-      visualDensity: VisualDensity.adaptivePlatformDensity,
-      primarySwatch: Colors.green,
-      buttonTheme: ButtonThemeData(
-      buttonColor: Colors.green,
-      textTheme: ButtonTextTheme.primary,
-      ),
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        primarySwatch: Colors.green,
+        buttonTheme: ButtonThemeData(
+          buttonColor: Colors.green,
+          textTheme: ButtonTextTheme.primary,
+        ),
       ),
       initialRoute: '/gateway',
       routes: {
@@ -146,16 +146,42 @@ class MainMenu extends StatefulWidget {
 class _MainMenuState extends State<MainMenu> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Second Route"),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, '/gateway');
-          },
-          child: Text('Go back!'),
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        bottomNavigationBar: Container(
+          // TODO: theme this according to the main app theme
+          color: Colors.green,
+          child: TabBar(
+            indicatorColor: Colors.greenAccent,
+            tabs: [
+              Tab(text: 'DOGS', icon: Icon(Icons.favorite)),
+              Tab(text: 'CATS', icon: Icon(Icons.music_note)),
+              Tab(text: 'BIRDS', icon: Icon(Icons.search)),
+            ],
+          ),
+        ),
+        appBar: AppBar(
+          title: Text('Debt App'),
+          automaticallyImplyLeading: false,
+        ),
+        body: TabBarView(
+          children: [
+            Center(
+              child: Text('DOGS')
+            ),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, '/gateway');
+                },
+                child: Text('Go back!'),
+              ),
+            ),
+            Center(
+              child: Text('BIRDS')
+            ),
+          ],
         ),
       ),
     );
