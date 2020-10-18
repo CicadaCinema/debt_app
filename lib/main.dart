@@ -84,9 +84,19 @@ class FirebaseBuilder extends StatelessWidget {
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
+          return StreamBuilder<User>(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (BuildContext context, AsyncSnapshot<User> user){
+              return user.hasData ? MainMenu() : GatewayPage();
+            },
+          );
+          /*
+          JANK, BUT PRESERVES ROUTING:
+
           return Scaffold(
             body: GatewayPage(),
           );
+          */
         }
 
         // show loading screen while waiting for initialization to complete
@@ -103,9 +113,13 @@ class GatewayPage extends StatefulWidget {GatewayPage({Key key}) : super(key: ke
 class _GatewayPageState extends State<GatewayPage> {
   final _formKey = GlobalKey<FormState>();
 
-  // these two blocks of code are pretty awful:
-  // not only is the listener called multiple times seemingly at random,
-  // but the code also requires the whole gateway screen to be built to call initState() and to go to the /main route
+  /*
+  JANK, BUT PRESERVES ROUTING:
+
+  these two blocks of code are pretty awful:
+  not only is the listener called multiple times seemingly at random,
+  but the code also requires the whole gateway screen to be built to call initState() and to go to the /main route
+
   @override
   void initState() {
     _handleStartScreen();
@@ -123,6 +137,7 @@ class _GatewayPageState extends State<GatewayPage> {
         }
       });
   }
+  */
 
   String _username;
   String _password;
