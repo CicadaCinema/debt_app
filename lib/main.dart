@@ -49,14 +49,14 @@ void main() {
       ),
       initialRoute: '/gateway',
       routes: {
-        '/gateway': (context) => MyApp(),
+        '/gateway': (context) => FirebaseBuilder(),
         '/main': (context) => MainMenu(),
       },
     )
   );
 }
 
-class MyApp extends StatelessWidget {
+class FirebaseBuilder extends StatelessWidget {
   Widget messageScreen(String titleText, IconData icon, Color iconColour, String iconText) {
     return Scaffold(
         appBar: AppBar(
@@ -74,7 +74,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsFlutterBinding.ensureInitialized();
     return FutureBuilder(
       // initialize FlutterFire
       future: Firebase.initializeApp(),
@@ -84,10 +83,9 @@ class MyApp extends StatelessWidget {
           return messageScreen('Firebase Error', Icons.error, Colors.orange, 'Error connecting to Firebase');
         }
 
-        // once complete, show main screen
         if (snapshot.connectionState == ConnectionState.done) {
           return Scaffold(
-            body: GatewayPage(title: 'Gateway'),
+            body: GatewayPage(),
           );
         }
 
@@ -98,15 +96,33 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class GatewayPage extends StatefulWidget {GatewayPage({Key key, this.title}) : super(key: key);
-  final String title;
-
+class GatewayPage extends StatefulWidget {GatewayPage({Key key}) : super(key: key);
   @override
   _GatewayPageState createState() => _GatewayPageState();
 }
 class _GatewayPageState extends State<GatewayPage> {
   final _formKey = GlobalKey<FormState>();
-  FirebaseAuth auth = FirebaseAuth.instance;
+
+  // these two blocks of code are pretty awful:
+  // not only is the listener called multiple times seemingly at random,
+  // but the code also requires the whole gateway screen to be built to call initState() and to go to the /main route
+  @override
+  void initState() {
+    _handleStartScreen();
+  }
+
+  void _handleStartScreen() {
+    FirebaseAuth.instance
+      .authStateChanges()
+      .listen((User user ) {
+        if (user == null) {
+         //print('User is currently signed out!');
+        } else {
+          print(user.uid);
+          Navigator.pushReplacementNamed(context, '/main');
+        }
+      });
+  }
 
   String _username;
   String _password;
@@ -190,7 +206,7 @@ class _GatewayPageState extends State<GatewayPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('Gateway'),
       ),
       body: Center(
         child: Column(
@@ -234,7 +250,7 @@ class _MainMenuState extends State<MainMenu> {
         body: TabBarView(
           children: [
             Center(
-              child: Text('DOGS')
+              child: Text(ModalRoute.of(context).settings.name)
             ),
             Center(
               child: ElevatedButton(
