@@ -1,6 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-//import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+class CustomException implements Exception {
+  String cause;
+  CustomException(this.cause);
+}
+
+Future<void> _showDialogBox(String title, String message, BuildContext context) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(title),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text(message),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -74,9 +106,36 @@ class GatewayPage extends StatefulWidget {GatewayPage({Key key, this.title}) : s
 }
 class _GatewayPageState extends State<GatewayPage> {
   final _formKey = GlobalKey<FormState>();
+  FirebaseAuth auth = FirebaseAuth.instance;
 
   String _username;
   String _password;
+
+  void _enterGateway(String action) async {
+    try {
+      switch (action) {
+        case 'Register':
+          UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+              email: _username,
+              password: _password
+          );
+          break;
+        case 'Login':
+          UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+              email: _username,
+              password: _password
+          );
+          break;
+        default:
+          throw Exception('Invalid action parameter in _enterGateway() call.');
+      }
+      Navigator.pushReplacementNamed(context, '/main');
+    } on FirebaseAuthException catch (e) {
+      _showDialogBox('FirebaseAuthException caught', e.toString(), context);
+    } catch (e) {
+      _showDialogBox('Unhandled Exception', e.toString(), context);
+    }
+  }
 
   Widget loginForm() {
     return Form(
@@ -106,14 +165,21 @@ class _GatewayPageState extends State<GatewayPage> {
               decoration: InputDecoration(labelText: 'Password'),
             ),
             RaisedButton(
-              child: Text('Submit'),
+              child: Text('Register'),
               onPressed: () {
                 if (_formKey.currentState.validate()) {
-                  // if the form is valid, go to main route
-                  Navigator.pushReplacementNamed(context, '/main');
+                  _enterGateway('Register');
                 }
               },
-            )
+            ),
+            RaisedButton(
+              child: Text('Login'),
+              onPressed: () {
+                if (_formKey.currentState.validate()) {
+                  _enterGateway('Login');
+                }
+              },
+            ),
           ],
         ),
       )
