@@ -87,7 +87,12 @@ class FirebaseBuilder extends StatelessWidget {
           return StreamBuilder<User>(
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (BuildContext context, AsyncSnapshot<User> user){
-              return user.hasData ? MainMenu() : GatewayPage();
+              if (FirebaseAuth.instance.currentUser != null){
+                if (FirebaseAuth.instance.currentUser.uid != null){
+                  return MainMenu();
+                }
+              }
+              return GatewayPage();
             },
           );
           /*
@@ -268,7 +273,7 @@ class _MainMenuState extends State<MainMenu> {
               child: Text(ModalRoute.of(context).settings.name)
             ),
             Center(
-              child: ElevatedButton(
+              child: RaisedButton(
                 onPressed: () {
                   Navigator.pushReplacementNamed(context, '/gateway');
                 },
@@ -276,7 +281,14 @@ class _MainMenuState extends State<MainMenu> {
               ),
             ),
             Center(
-              child: Text('BIRDS')
+              child: RaisedButton(
+                onPressed: () {
+                  FirebaseAuth.instance.signOut();
+                  Navigator.pushReplacementNamed(context, '/gateway');
+
+                },
+                child: Text('Sign out'),
+              ),
             ),
           ],
         ),
