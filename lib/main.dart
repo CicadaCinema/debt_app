@@ -87,10 +87,32 @@ class FirebaseBuilder extends StatelessWidget {
           return StreamBuilder<User>(
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (BuildContext context, AsyncSnapshot<User> user){
+              bool _displayGateway = true;
               if (FirebaseAuth.instance.currentUser != null && FirebaseAuth.instance.currentUser.uid != null){
-                return MainMenu();
+                _displayGateway = false;
               }
-              return GatewayPage();
+
+              var _newPage = _displayGateway ? GatewayPage() : MainMenu();
+              var _previousPage = !_displayGateway ? GatewayPage() : MainMenu();
+
+              double _direction = _displayGateway ? 1.0 : -1.0;
+
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 500),
+                child: _newPage,
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  Animation<Offset> _slideAnimationPage1 = Tween<Offset>(begin: Offset(0.0, 0.0), end: Offset(0.0, _direction)).animate(animation);
+                  Animation<Offset> _slideAnimationPage2 = Tween<Offset>(begin: Offset(0.0, -1*_direction), end: Offset(0.0, 0.0)).animate(animation);
+                  return Stack(
+                    children: <Widget>[
+                      SlideTransition(position: _slideAnimationPage1, child: _previousPage),
+                      SlideTransition(position: _slideAnimationPage2, child: _newPage),
+                    ],
+                  );
+                  //return ScaleTransition(child: child, scale: animation);
+                },
+
+              );
             },
           );
           /*
