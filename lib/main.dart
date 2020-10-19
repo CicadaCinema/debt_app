@@ -47,10 +47,9 @@ void main() {
           textTheme: ButtonTextTheme.primary,
         ),
       ),
-      initialRoute: '/gateway',
+      initialRoute: '/',
       routes: {
-        '/gateway': (context) => FirebaseBuilder(),
-        '/main': (context) => MainMenu(),
+        '/': (context) => FirebaseBuilder(),
       },
     )
   );
@@ -115,13 +114,6 @@ class FirebaseBuilder extends StatelessWidget {
               );
             },
           );
-          /*
-          JANK, BUT PRESERVES ROUTING:
-
-          return Scaffold(
-            body: GatewayPage(),
-          );
-          */
         }
 
         // show loading screen while waiting for initialization to complete
@@ -137,32 +129,6 @@ class GatewayPage extends StatefulWidget {GatewayPage({Key key}) : super(key: ke
 }
 class _GatewayPageState extends State<GatewayPage> {
   final _formKey = GlobalKey<FormState>();
-
-  /*
-  JANK, BUT PRESERVES ROUTING:
-
-  these two blocks of code are pretty awful:
-  not only is the listener called multiple times seemingly at random,
-  but the code also requires the whole gateway screen to be built to call initState() and to go to the /main route
-
-  @override
-  void initState() {
-    _handleStartScreen();
-  }
-
-  void _handleStartScreen() {
-    FirebaseAuth.instance
-      .authStateChanges()
-      .listen((User user ) {
-        if (user == null) {
-         //print('User is currently signed out!');
-        } else {
-          print(user.uid);
-          Navigator.pushReplacementNamed(context, '/main');
-        }
-      });
-  }
-  */
 
   String _username;
   String _password;
@@ -185,7 +151,6 @@ class _GatewayPageState extends State<GatewayPage> {
         default:
           throw Exception('Invalid action parameter in _enterGateway() call.');
       }
-      //Navigator.pushReplacementNamed(context, '/main');
     } on FirebaseAuthException catch (e) {
       _showDialogBox('FirebaseAuthException caught', e.toString(), context);
     } catch (e) {
@@ -290,12 +255,11 @@ class _MainMenuState extends State<MainMenu> {
         body: TabBarView(
           children: [
             Center(
-              child: Text(ModalRoute.of(context).settings.name)
+              child: Text('Current route:' + ModalRoute.of(context).settings.name)
             ),
             Center(
               child: RaisedButton(
                 onPressed: () {
-                  //Navigator.pushReplacementNamed(context, '/gateway');
                 },
                 child: Text('Go back!'),
               ),
@@ -304,7 +268,6 @@ class _MainMenuState extends State<MainMenu> {
               child: RaisedButton(
                 onPressed: () {
                   FirebaseAuth.instance.signOut();
-                  //Navigator.pushReplacementNamed(context, '/gateway');
                 },
                 child: Text('Sign out'),
               ),
