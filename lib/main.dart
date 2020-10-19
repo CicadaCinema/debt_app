@@ -87,10 +87,8 @@ class FirebaseBuilder extends StatelessWidget {
           return StreamBuilder<User>(
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (BuildContext context, AsyncSnapshot<User> user){
-              if (FirebaseAuth.instance.currentUser != null){
-                if (FirebaseAuth.instance.currentUser.uid != null){
-                  return MainMenu();
-                }
+              if (FirebaseAuth.instance.currentUser != null && FirebaseAuth.instance.currentUser.uid != null){
+                return MainMenu();
               }
               return GatewayPage();
             },
@@ -165,7 +163,7 @@ class _GatewayPageState extends State<GatewayPage> {
         default:
           throw Exception('Invalid action parameter in _enterGateway() call.');
       }
-      Navigator.pushReplacementNamed(context, '/main');
+      //Navigator.pushReplacementNamed(context, '/main');
     } on FirebaseAuthException catch (e) {
       _showDialogBox('FirebaseAuthException caught', e.toString(), context);
     } catch (e) {
@@ -275,7 +273,7 @@ class _MainMenuState extends State<MainMenu> {
             Center(
               child: RaisedButton(
                 onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/gateway');
+                  //Navigator.pushReplacementNamed(context, '/gateway');
                 },
                 child: Text('Go back!'),
               ),
@@ -284,8 +282,7 @@ class _MainMenuState extends State<MainMenu> {
               child: RaisedButton(
                 onPressed: () {
                   FirebaseAuth.instance.signOut();
-                  Navigator.pushReplacementNamed(context, '/gateway');
-
+                  //Navigator.pushReplacementNamed(context, '/gateway');
                 },
                 child: Text('Sign out'),
               ),
