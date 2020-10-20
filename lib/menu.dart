@@ -42,7 +42,7 @@ class _MainMenuState extends State<MainMenu> {
             Center(
                 child: Column(
                   children: [
-                    Spacer(),
+                    Spacer(flex: 3),
                     //Text('Current route:' + ModalRoute.of(context).settings.name),
                     Text(
                       'My balance:',
@@ -52,7 +52,7 @@ class _MainMenuState extends State<MainMenu> {
                       '123.123',
                       style: TextStyle(fontSize: 64),
                     ),
-                    Spacer(flex: 1),
+                    Spacer(flex: 3),
                     RaisedButton(
                       onPressed: (){},
                       child: Text(
@@ -60,7 +60,7 @@ class _MainMenuState extends State<MainMenu> {
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
-                    SizedBox(height: 64)
+                    Spacer(),
                   ],
                 )
             ),

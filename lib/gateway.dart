@@ -112,37 +112,46 @@ class _GatewayPageState extends State<GatewayPage> {
         padding: EdgeInsets.all(10),
         child: Column(
           children: <Widget>[
-            TextFormField(
-              validator: (value) {
-                if (value == '') {
-                  return 'Empty field';
-                }
-                _email=value;
-                return null;
-              },
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Email',
+            Spacer(flex: 2),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+              child: TextFormField(
+                validator: (value) {
+                  if (value == '') {
+                    return 'Empty field';
+                  }
+                  _email=value;
+                  return null;
+                },
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Email',
+                ),
               ),
             ),
-            SizedBox(height:32),
-            TextFormField(
-              validator: (value) {
-                if (value == '') {
-                  return 'Empty field';
-                }
-                _password=value;
-                return null;
-              },
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Password',
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+              child: TextFormField(
+                validator: (value) {
+                  if (value == '') {
+                    return 'Empty field';
+                  }
+                  _password=value;
+                  return null;
+                },
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Password',
+                ),
+                obscureText: true,
               ),
-              obscureText: true,
             ),
-            SizedBox(height:64),
+            Spacer(),
             FlatButton(
-              child: Text('Register'),
+              child: Padding(
+                padding: EdgeInsets.all(12),
+                child: Text('Register'),
+              ),
               onPressed: () {
                 if (_formKey.currentState.validate()) {
                   _enterGateway('Register');
@@ -150,13 +159,17 @@ class _GatewayPageState extends State<GatewayPage> {
               },
             ),
             RaisedButton(
-              child: Text('Login'),
+              child: Padding(
+                padding: EdgeInsets.all(12),
+                child: Text('Login'),
+              ),
               onPressed: () {
                 if (_formKey.currentState.validate()) {
                   _enterGateway('Login');
                 }
               },
             ),
+            Spacer(flex: 4),
           ],
         ),
       )
@@ -170,12 +183,7 @@ class _GatewayPageState extends State<GatewayPage> {
         title: Text('Gateway'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            loginForm(),
-          ],
-        ),
+        child: loginForm(),
       ),
     );
   }

@@ -8,32 +8,36 @@ Widget requestForm() {
       padding: EdgeInsets.all(10),
       child: Column(
         children: <Widget>[
-          TextFormField(
-            validator: (value) {
-              if (value == '') {
-                return 'Empty field';
-              }
-              return null;
-            },
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Destination user',
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+            child: TextFormField(
+              validator: (value) {
+                if (value == '') {
+                  return 'Empty field';
+                }
+                return null;
+              },
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Destination user',
+              ),
             ),
           ),
-          SizedBox(height:32),
-          TextFormField(
-            validator: (value) {
-              if (value == '') {
-                return 'Empty field';
-              }
-              return null;
-            },
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Amount',
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+            child: TextFormField(
+              validator: (value) {
+                if (value == '') {
+                  return 'Empty field';
+                }
+                return null;
+              },
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Amount',
+              ),
             ),
           ),
-          SizedBox(height:64),
           RaisedButton(
             child: Text('Submit'),
             onPressed: () {
