@@ -2,12 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'transaction_request.dart';
+
 class MainMenu extends StatefulWidget {
   @override
   _MainMenuState createState() => _MainMenuState();
 }
 
 class _MainMenuState extends State<MainMenu> {
+  Map<String, num> _map = {
+    "UserA": -99.99,
+    "UserB": 0.5,
+    "UserC" : 90,
+    "UserD" : 12.0};
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -19,9 +27,9 @@ class _MainMenuState extends State<MainMenu> {
           child: TabBar(
             indicatorColor: Colors.greenAccent,
             tabs: [
-              Tab(text: 'DOGS', icon: Icon(Icons.favorite)),
-              Tab(text: 'CATS', icon: Icon(Icons.music_note)),
-              Tab(text: 'BIRDS', icon: Icon(Icons.search)),
+              Tab(text: 'Wallet', icon: Icon(Icons.account_balance)),
+              Tab(text: 'Transaction', icon: Icon(Icons.attach_money)),
+              Tab(text: 'Breakdown', icon: Icon(Icons.search)),
             ],
           ),
         ),
@@ -32,22 +40,62 @@ class _MainMenuState extends State<MainMenu> {
         body: TabBarView(
           children: [
             Center(
-                child: Text('Current route:' + ModalRoute.of(context).settings.name)
+                child: Column(
+                  children: [
+                    Spacer(),
+                    //Text('Current route:' + ModalRoute.of(context).settings.name),
+                    Text(
+                      'My balance:',
+                      style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      '123.123',
+                      style: TextStyle(fontSize: 64),
+                    ),
+                    Spacer(flex: 1),
+                    RaisedButton(
+                      onPressed: (){},
+                      child: Text(
+                        'Update',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    SizedBox(height: 64)
+                  ],
+                )
             ),
             Center(
-              child: RaisedButton(
-                onPressed: () {
-                },
-                child: Text('Go back!'),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Spacer(),
+                  requestForm(),
+                  Spacer(flex: 3),
+                  FlatButton(
+                    onPressed: () {
+                      FirebaseAuth.instance.signOut();
+                    },
+                    child: Text('Sign out'),
+                  ),
+                  Spacer()
+                ],
               ),
             ),
             Center(
-              child: RaisedButton(
-                onPressed: () {
-                  FirebaseAuth.instance.signOut();
-                },
-                child: Text('Sign out'),
-              ),
+              child: SingleChildScrollView(
+                child: DataTable(
+                  columns: const <DataColumn>[
+                    DataColumn(label: Text('User')),
+                    DataColumn(label: Text('Amount')),
+                  ],
+                  rows: _map.entries
+                      .map((e) => DataRow(cells: [
+                    DataCell(Text(e.key.toString())),
+                    DataCell(Text(e.value.toString())),
+                  ]))
+                      .toList(),
+                ),
+              )
             ),
           ],
         ),

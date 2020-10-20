@@ -107,59 +107,59 @@ class _GatewayPageState extends State<GatewayPage> {
 
   Widget loginForm() {
     return Form(
-        key: _formKey,
-        child: Container(
-          padding: EdgeInsets.all(10),
-          child: Column(
-            children: <Widget>[
-              TextFormField(
-                validator: (value) {
-                  if (value == '') {
-                    return 'Empty field';
-                  }
-                  _email=value;
-                  return null;
-                },
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Email',
-                ),
+      key: _formKey,
+      child: Container(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          children: <Widget>[
+            TextFormField(
+              validator: (value) {
+                if (value == '') {
+                  return 'Empty field';
+                }
+                _email=value;
+                return null;
+              },
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Email',
               ),
-              SizedBox(height:32),
-              TextFormField(
-                validator: (value) {
-                  if (value == '') {
-                    return 'Empty field';
-                  }
-                  _password=value;
-                  return null;
-                },
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Password',
-                ),
-                obscureText: true,
+            ),
+            SizedBox(height:32),
+            TextFormField(
+              validator: (value) {
+                if (value == '') {
+                  return 'Empty field';
+                }
+                _password=value;
+                return null;
+              },
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Password',
               ),
-              SizedBox(height:64),
-              FlatButton(
-                child: Text('Register'),
-                onPressed: () {
-                  if (_formKey.currentState.validate()) {
-                    _enterGateway('Register');
-                  }
-                },
-              ),
-              RaisedButton(
-                child: Text('Login'),
-                onPressed: () {
-                  if (_formKey.currentState.validate()) {
-                    _enterGateway('Login');
-                  }
-                },
-              ),
-            ],
-          ),
-        )
+              obscureText: true,
+            ),
+            SizedBox(height:64),
+            FlatButton(
+              child: Text('Register'),
+              onPressed: () {
+                if (_formKey.currentState.validate()) {
+                  _enterGateway('Register');
+                }
+              },
+            ),
+            RaisedButton(
+              child: Text('Login'),
+              onPressed: () {
+                if (_formKey.currentState.validate()) {
+                  _enterGateway('Login');
+                }
+              },
+            ),
+          ],
+        ),
+      )
     );
   }
 
