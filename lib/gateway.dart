@@ -2,6 +2,55 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'misc.dart';
 
+Future<String> _getFriendlyName(context) async {
+  final _formKey = GlobalKey<FormState>();
+  String _username;
+
+  await showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Enter username'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Form(
+                key: _formKey,
+                child: TextFormField(
+                  validator: (value) {
+                    if (value == '') {
+                      return 'Empty field';
+                    }
+                    _username = value;
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Username',
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Submit'),
+            onPressed: () {
+              if (_formKey.currentState.validate()){
+                Navigator.pop(context);
+              }
+            },
+          ),
+        ],
+      );
+    },
+  );
+
+  return _username;
+}
+
 class GatewayPage extends StatefulWidget {GatewayPage({Key key}) : super(key: key);
 @override
 _GatewayPageState createState() => _GatewayPageState();
@@ -9,21 +58,26 @@ _GatewayPageState createState() => _GatewayPageState();
 class _GatewayPageState extends State<GatewayPage> {
   final _formKey = GlobalKey<FormState>();
 
-  String _username;
+  String _email;
   String _password;
 
   void _enterGateway(String action) async {
     try {
       switch (action) {
         case 'Register':
+          // error handling is handled below anyway so this future doesn't have error handling
+          await _getFriendlyName(context)
+              .then((value) {
+            print('BOX OPENS'+ value);
+          });
           UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-              email: _username,
+              email: _email,
               password: _password
           );
           break;
         case 'Login':
           UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-              email: _username,
+              email: _email,
               password: _password
           );
           break;
@@ -47,24 +101,33 @@ class _GatewayPageState extends State<GatewayPage> {
               TextFormField(
                 validator: (value) {
                   if (value == '') {
-                    return 'Field must be non-empty';
+                    return 'Empty field';
                   }
-                  _username=value;
+                  _email=value;
                   return null;
                 },
-                decoration: InputDecoration(labelText: 'Username'),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Email',
+                ),
               ),
+              SizedBox(height:32),
               TextFormField(
                 validator: (value) {
                   if (value == '') {
-                    return 'Field must be non-empty';
+                    return 'Empty field';
                   }
                   _password=value;
                   return null;
                 },
-                decoration: InputDecoration(labelText: 'Password'),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Password',
+                ),
+                obscureText: true,
               ),
-              RaisedButton(
+              SizedBox(height:64),
+              FlatButton(
                 child: Text('Register'),
                 onPressed: () {
                   if (_formKey.currentState.validate()) {
