@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'misc.dart';
 import 'transaction_request.dart';
 
 class MainMenu extends StatefulWidget {
@@ -10,6 +12,11 @@ class MainMenu extends StatefulWidget {
 }
 
 class _MainMenuState extends State<MainMenu> {
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  String _uid = FirebaseAuth.instance.currentUser.uid;
+  String _username = "My";
+  String _balance = "loading ...";
+
   Map<String, num> _map = {
     "UserA": -99.99,
     "UserB": 0.5,
@@ -31,6 +38,19 @@ class _MainMenuState extends State<MainMenu> {
       ]))
           .toList(),
     );
+  }
+
+  void _getBalance() {
+    Future<DocumentSnapshot> _future = users.doc(_uid).get();
+    _future.then((DocumentSnapshot value) {
+      Map<String, dynamic> retrievedData = value.data();
+      _username =retrievedData['username'] + '\'s';
+      _balance = '£' + value.data()['balance'].toStringAsFixed(2);
+      setState(() {});
+    })
+        .catchError((error) {
+          showDialogBox('Cloud Firestore error', 'Error retrieving user data', context);
+        });
   }
 
   @override
@@ -62,16 +82,18 @@ class _MainMenuState extends State<MainMenu> {
                   Spacer(flex: 3),
                   //Text('Current route:' + ModalRoute.of(context).settings.name),
                   Text(
-                    'My balance:',
+                    '${_username} balance:',
                     style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    '123.123',
-                    style: TextStyle(fontSize: 64),
+                    _balance,
+                    style: TextStyle(fontSize: 64, fontWeight: FontWeight.bold),
                   ),
                   Spacer(flex: 3),
                   RaisedButton(
-                    onPressed: (){},
+                    onPressed: (){
+                      _getBalance();
+                    },
                     child: Text(
                       'Update',
                       style: TextStyle(fontSize: 16),
