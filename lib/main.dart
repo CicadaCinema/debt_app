@@ -29,16 +29,16 @@ void main() {
 class FirebaseBuilder extends StatelessWidget {
   Widget messageScreen(String titleText, IconData icon, Color iconColour, String iconText) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(titleText),
-        ),
-        body: Center(
-          child:
-          Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Icon(icon, size: 64, color: iconColour),
-            Text(iconText, textScaleFactor: 2.0),
-          ]),
-        )
+      appBar: AppBar(
+        title: Text(titleText),
+      ),
+      body: Center(
+        child:
+        Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Icon(icon, size: 64, color: iconColour),
+          Text(iconText, textScaleFactor: 2.0),
+        ]),
+      )
     );
   }
 

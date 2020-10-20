@@ -14,7 +14,24 @@ class _MainMenuState extends State<MainMenu> {
     "UserA": -99.99,
     "UserB": 0.5,
     "UserC" : 90,
-    "UserD" : 12.0};
+  };
+
+  // not really sure how this returns a nice table from a map
+  // but it does do that quite nicely
+  Widget _showTable(Map<String, num> inputMap) {
+    return DataTable(
+      columns: const <DataColumn>[
+        DataColumn(label: Text('User')),
+        DataColumn(label: Text('Amount')),
+      ],
+      rows: inputMap.entries
+          .map((e) => DataRow(cells: [
+        DataCell(Text(e.key.toString())),
+        DataCell(Text(e.value.toString())),
+      ]))
+          .toList(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,29 +57,29 @@ class _MainMenuState extends State<MainMenu> {
         body: TabBarView(
           children: [
             Center(
-                child: Column(
-                  children: [
-                    Spacer(flex: 3),
-                    //Text('Current route:' + ModalRoute.of(context).settings.name),
-                    Text(
-                      'My balance:',
-                      style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              child: Column(
+                children: [
+                  Spacer(flex: 3),
+                  //Text('Current route:' + ModalRoute.of(context).settings.name),
+                  Text(
+                    'My balance:',
+                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '123.123',
+                    style: TextStyle(fontSize: 64),
+                  ),
+                  Spacer(flex: 3),
+                  RaisedButton(
+                    onPressed: (){},
+                    child: Text(
+                      'Update',
+                      style: TextStyle(fontSize: 16),
                     ),
-                    Text(
-                      '123.123',
-                      style: TextStyle(fontSize: 64),
-                    ),
-                    Spacer(flex: 3),
-                    RaisedButton(
-                      onPressed: (){},
-                      child: Text(
-                        'Update',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                    Spacer(),
-                  ],
-                )
+                  ),
+                  Spacer(),
+                ],
+              )
             ),
             Center(
               child: Column(
@@ -83,18 +100,7 @@ class _MainMenuState extends State<MainMenu> {
             ),
             Center(
               child: SingleChildScrollView(
-                child: DataTable(
-                  columns: const <DataColumn>[
-                    DataColumn(label: Text('User')),
-                    DataColumn(label: Text('Amount')),
-                  ],
-                  rows: _map.entries
-                      .map((e) => DataRow(cells: [
-                    DataCell(Text(e.key.toString())),
-                    DataCell(Text(e.value.toString())),
-                  ]))
-                      .toList(),
-                ),
+                child: _showTable(_map),
               )
             ),
           ],
