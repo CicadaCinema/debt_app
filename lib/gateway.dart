@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'misc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 Future<String> _getFriendlyName(context) async {
   final _formKey = GlobalKey<FormState>();
@@ -60,20 +61,33 @@ class _GatewayPageState extends State<GatewayPage> {
 
   String _email;
   String _password;
+  String _username;
 
   void _enterGateway(String action) async {
     try {
       switch (action) {
         case 'Register':
-          // error handling is handled below anyway so this future doesn't have error handling
+          // none of these functions require error handling - this is handled by the main block
+
           await _getFriendlyName(context)
-              .then((value) {
-            print('BOX OPENS'+ value);
-          });
+              .then((value) => _username = value);
           UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
               email: _email,
               password: _password
           );
+          CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+          users
+              .doc(userCredential.user.uid)
+              .set({
+            'balance': 0.0,
+            'username' : _username,
+            'pending': false,
+            'pending_user': '',
+            'pending_amount': 0.0,
+            'debts': {}
+          });
+
           break;
         case 'Login':
           UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
