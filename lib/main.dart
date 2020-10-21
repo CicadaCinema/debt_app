@@ -57,6 +57,8 @@ class FirebaseBuilder extends StatelessWidget {
           return StreamBuilder<User>(
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (BuildContext context, AsyncSnapshot<User> user){
+              // this is required to prevent the transition from happening multiple times
+              // just one condition is unreliable by itself
               bool _displayGateway = true;
               if (FirebaseAuth.instance.currentUser != null && FirebaseAuth.instance.currentUser.uid != null){
                 _displayGateway = false;

@@ -8,6 +8,7 @@ Widget requestForm() {
       padding: EdgeInsets.all(10),
       child: Column(
         children: <Widget>[
+          Spacer(),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
             child: TextFormField(
@@ -19,7 +20,7 @@ Widget requestForm() {
               },
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Destination user',
+                labelText: 'Sender\'s username',
               ),
             ),
           ),
@@ -38,6 +39,7 @@ Widget requestForm() {
               ),
             ),
           ),
+          Spacer(flex: 3),
           RaisedButton(
             child: Text('Submit'),
             onPressed: () {
@@ -46,6 +48,7 @@ Widget requestForm() {
               }
             },
           ),
+          Spacer()
         ],
       ),
     )

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'misc.dart';
+import 'transaction_dispatch.dart';
 import 'transaction_request.dart';
 
 class MainMenu extends StatefulWidget {
@@ -13,9 +14,8 @@ class MainMenu extends StatefulWidget {
 
 class _MainMenuState extends State<MainMenu> {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
-  String _uid = FirebaseAuth.instance.currentUser.uid;
-  String _username = "My";
-  String _balance = "loading ...";
+  String _usernameReadout = "My balance:";
+  String _balanceReadout = "£-.--";
 
   Map<String, num> _map = {
     "UserA": -99.99,
@@ -41,11 +41,12 @@ class _MainMenuState extends State<MainMenu> {
   }
 
   void _getBalance() {
+    String _uid = FirebaseAuth.instance.currentUser.uid;
     Future<DocumentSnapshot> _future = users.doc(_uid).get();
     _future.then((DocumentSnapshot value) {
       Map<String, dynamic> retrievedData = value.data();
-      _username =retrievedData['username'] + '\'s';
-      _balance = '£' + value.data()['balance'].toStringAsFixed(2);
+      _usernameReadout = '${retrievedData['username']}\'s balance:';
+      _balanceReadout = '£' + value.data()['balance'].toStringAsFixed(2);
       setState(() {});
     })
         .catchError((error) {
@@ -56,7 +57,7 @@ class _MainMenuState extends State<MainMenu> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         bottomNavigationBar: Container(
           // TODO: theme this according to the main app theme
@@ -65,8 +66,9 @@ class _MainMenuState extends State<MainMenu> {
             indicatorColor: Colors.greenAccent,
             tabs: [
               Tab(text: 'Wallet', icon: Icon(Icons.account_balance)),
-              Tab(text: 'Transaction', icon: Icon(Icons.attach_money)),
-              Tab(text: 'Breakdown', icon: Icon(Icons.search)),
+              Tab(text: 'Send', icon: Icon(Icons.send)),
+              Tab(text: 'Receive', icon: Icon(Icons.done_all)),
+              Tab(text: 'Detail', icon: Icon(Icons.search)),
             ],
           ),
         ),
@@ -82,11 +84,11 @@ class _MainMenuState extends State<MainMenu> {
                   Spacer(flex: 3),
                   //Text('Current route:' + ModalRoute.of(context).settings.name),
                   Text(
-                    '${_username} balance:',
+                    _usernameReadout,
                     style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    _balance,
+                    _balanceReadout,
                     style: TextStyle(fontSize: 64, fontWeight: FontWeight.bold),
                   ),
                   Spacer(flex: 3),
@@ -95,35 +97,26 @@ class _MainMenuState extends State<MainMenu> {
                       _getBalance();
                     },
                     child: Text(
-                      'Update',
+                      'Temp button: Update',
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
-                  Spacer(),
-                ],
-              )
-            ),
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Spacer(),
-                  requestForm(),
-                  Spacer(flex: 3),
                   FlatButton(
                     onPressed: () {
                       FirebaseAuth.instance.signOut();
                     },
                     child: Text('Sign out'),
                   ),
-                  Spacer()
+                  Spacer(),
                 ],
-              ),
-            ),
-            Center(
-              child: SingleChildScrollView(
-                child: _showTable(_map),
               )
+            ),
+            dispatchForm(),
+            requestForm(),
+            Center(
+                child: SingleChildScrollView(
+                  child: _showTable(_map),
+                )
             ),
           ],
         ),
