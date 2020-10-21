@@ -18,6 +18,7 @@ Widget dispatchForm(context) {
         .get();
 
     _future.then((QuerySnapshot value) {
+      // TODO: could add a snack bar here instead of explicit popups
       if(value.size == 0){
         showDialogBox('Error processing request', 'Invalid username', context);
         return;
