@@ -11,6 +11,27 @@ Widget dispatchForm(context) {
   String _recipient;
   double _amount;
 
+  void dispatchRequest(){
+    String _uid = FirebaseAuth.instance.currentUser.uid;
+    Future<QuerySnapshot> _future = users
+        .where('username', isEqualTo: _recipient)
+        .get();
+
+    _future.then((QuerySnapshot value) {
+      if(value.size == 0){
+        showDialogBox('Error processing request', 'Invalid username', context);
+        return;
+      } else if (value.docs.first.data()['pending_amount'] != _amount){
+        showDialogBox('Error processing request', 'Amount does not match', context);
+      } else {
+        showDialogBox('Transaction', 'Perform transaction!', context);
+      }
+    })
+        .catchError((error) {
+      showDialogBox('Cloud Firestore error', 'Error retrieving data: ' + error, context);
+    });
+  }
+
   return Form(key: _formKey,
       child: Container(
         padding: EdgeInsets.all(10),
@@ -56,7 +77,7 @@ Widget dispatchForm(context) {
               child: Text('Submit'),
               onPressed: () {
                 if (_formKey.currentState.validate()) {
-
+                  dispatchRequest();
                 }
               },
             ),

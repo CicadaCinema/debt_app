@@ -7,6 +7,7 @@ Future<String> _getFriendlyName(context) async {
   final _formKey = GlobalKey<FormState>();
   String _username;
 
+  // TODO: ensure username is not taken
   await showDialog<void>(
     context: context,
     barrierDismissible: false,
