@@ -38,18 +38,19 @@ Widget requestForm(context) {
     });
 
     // subscribe to changes in the sender's document
-    Stream documentStream = FirebaseFirestore.instance.collection('users').doc(senderUid).snapshots();
+    Stream senderDocumentStream = FirebaseFirestore.instance.collection('users').doc(senderUid).snapshots();
 
     // this could be used in conjunction with the block below to time out - break the for loop somehow?
+    // or maybe the sender's document is checked just once, after this time interval has completed?
     var timeoutFuture = Future.delayed(Duration(seconds: 30));
     timeoutFuture.then((value) {
       print('TIMED OUT');
       return;
     });
 
-    // documentStream always fires once, even without any updates
+    // senderDocumentStream always fires once, even without any updates
     int patience = 0;
-    await for (var value in documentStream) {
+    await for (var value in senderDocumentStream) {
       patience ++;
       if (patience == 2){
         // check to see if value matches what we were expecting

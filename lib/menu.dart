@@ -15,7 +15,7 @@ class MainMenu extends StatefulWidget {
 class _MainMenuState extends State<MainMenu> {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   String _usernameReadout = "My balance:";
-  String _balanceReadout = "£-.--";
+  String _balanceReadout = "£0.00";
 
   Map<String, num> _map = {
     "UserA": -99.99,
@@ -40,18 +40,22 @@ class _MainMenuState extends State<MainMenu> {
     );
   }
 
-  void _getBalance() {
-    String _uid = FirebaseAuth.instance.currentUser.uid;
-    Future<DocumentSnapshot> _future = users.doc(_uid).get();
-    _future.then((DocumentSnapshot value) {
+  // keep updating user's username and balance
+  void updateBalance() async {
+    Stream ownDocumentStream = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).snapshots();
+    await for (var value in ownDocumentStream) {
       Map<String, dynamic> retrievedData = value.data();
       _usernameReadout = '${retrievedData['username']}\'s balance:';
       _balanceReadout = '£' + value.data()['balance'].toStringAsFixed(2);
       setState(() {});
-    })
-        .catchError((error) {
-          showDialogBox('Cloud Firestore error', 'Error retrieving user data: ' + error, context);
-        });
+    }
+  }
+
+  // launch update function before building
+  @override
+  void initState() {
+    updateBalance();
+    super.initState();
   }
 
   @override
@@ -92,15 +96,6 @@ class _MainMenuState extends State<MainMenu> {
                     style: TextStyle(fontSize: 64, fontWeight: FontWeight.bold),
                   ),
                   Spacer(flex: 3),
-                  RaisedButton(
-                    onPressed: (){
-                      _getBalance();
-                    },
-                    child: Text(
-                      'Temp button: Update',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
                   FlatButton(
                     onPressed: () {
                       FirebaseAuth.instance.signOut();
