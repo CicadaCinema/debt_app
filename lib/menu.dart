@@ -50,7 +50,7 @@ class _MainMenuState extends State<MainMenu> {
       setState(() {});
     })
         .catchError((error) {
-          showDialogBox('Cloud Firestore error', 'Error retrieving user data', context);
+          showDialogBox('Cloud Firestore error', 'Error retrieving user data: ' + error, context);
         });
   }
 
@@ -111,8 +111,8 @@ class _MainMenuState extends State<MainMenu> {
                 ],
               )
             ),
-            dispatchForm(),
-            requestForm(),
+            dispatchForm(context),
+            requestForm(context),
             Center(
                 child: SingleChildScrollView(
                   child: _showTable(_map),

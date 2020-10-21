@@ -31,3 +31,10 @@ Future<void> showDialogBox(String title, String message, BuildContext context) a
     },
   );
 }
+
+bool isNumeric(String s) {
+  if(s == null) {
+    return false;
+  }
+  return double.parse(s, (e) => null) != null;
+}

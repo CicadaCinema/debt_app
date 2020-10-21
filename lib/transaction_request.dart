@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
-Widget requestForm() {
+import 'misc.dart';
+
+Widget requestForm(context) {
   final _formKey = GlobalKey<FormState>();
+
+  String _sender;
+  double _amount;
 
   return Form(key: _formKey,
     child: Container(
@@ -16,6 +21,7 @@ Widget requestForm() {
                 if (value == '') {
                   return 'Empty field';
                 }
+                _sender = value;
                 return null;
               },
               decoration: InputDecoration(
@@ -30,7 +36,10 @@ Widget requestForm() {
               validator: (value) {
                 if (value == '') {
                   return 'Empty field';
+                } else if (!isNumeric(value)){
+                  return 'Not a number';
                 }
+                _amount = double.parse(value);
                 return null;
               },
               decoration: InputDecoration(
