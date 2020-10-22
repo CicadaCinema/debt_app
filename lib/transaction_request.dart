@@ -74,7 +74,7 @@ Widget requestForm(context) {
           break;
       }
       final snackBar = SnackBar(content: Text(snackBarText));
-      Scaffold.of(innerContext).showSnackBar(snackBar);
+      Scaffold.of(context).showSnackBar(snackBar);
 
       // stop listening to sender's document
       senderSubscription.cancel();
@@ -133,15 +133,11 @@ Widget requestForm(context) {
                   child: Text('Submit'),
                   onPressed: () async {
                     // this function is async so that _submitEnabled can block multiple requests from coming in at once
-                    // TODO: add a snack bar here or something?
-                    print('pressed');
+                    // TODO: add an indicator that the request is in progress and the button is unavailable
                     if (_submitEnabled && _formKey.currentState.validate()) {
                       _submitEnabled = false;
-                      print('successful');
                       await receiveRequest(innerContext);
                       _submitEnabled = true;
-                    } else{
-                      print('failed');
                     }
                   },
                 ),
