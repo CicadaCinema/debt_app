@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'menu.dart';
 import 'misc.dart';
 
 Widget requestForm(context) {
@@ -14,21 +15,21 @@ Widget requestForm(context) {
   double _amount;
   bool _submitEnabled = true;
 
-  void receiveRequest(innerContext) async {
+  void receiveRequest(myContext) async {
     // await the uid of the sender
     String senderUid;
     double senderBalanceGoal;
-    Future<QuerySnapshot> _future = users
+    Future<QuerySnapshot> senderFuture = users
         .where('username', isEqualTo: _sender)
         .get();
-    await _future.then((QuerySnapshot value) {
+    await senderFuture.then((QuerySnapshot value) {
       if(value.size != 1) {
-        showDialogBox('Error processing request', 'Found ${value.size} users with this username.', context);
+        showDialogBox('Error processing request', 'Found ${value.size} users with this username.', myContext);
         return;
       }
       QueryDocumentSnapshot retrievedDoc = value.docs.first;
       senderUid = retrievedDoc.id;
-      // TODO: think long and hard about how balance goal should be calculated, comment thoughts
+      // sender should deduct the agreed amount from their balance
       senderBalanceGoal = retrievedDoc.data()['balance'] - _amount;
     });
 
@@ -43,18 +44,27 @@ Widget requestForm(context) {
 
     // subscribe to changes in the sender's doc
     int subscriptionEventCount = 0;
+    bool transactionCompleted = false;
     Stream<DocumentSnapshot> senderDocumentStream = FirebaseFirestore.instance.collection('users').doc(senderUid).snapshots();
     StreamSubscription<DocumentSnapshot> senderSubscription = senderDocumentStream.listen((event) {
       subscriptionEventCount += 1;
       if (subscriptionEventCount == 2) {
         // this is the first time our target user (sender) updated their document since we started listening
         // (one event always fires once the subscription is set up)
-        double newBalance = event.data()['balance'];
+        double newBalance = event.data()['balance'] * 1.0; // ENSURE this is a double
         if (newBalance == senderBalanceGoal) {
-          // hooray! we can now perform the transaction on our end
+          // clear own pending status and perform transaction
+          // TODO: add to debt
+          users.doc(userCredential.uid)
+              .update({
+            'balance': BalanceStore.balance + _amount,
+            'pending': false,
+            'pending_user': '',
+            'pending_amount': 0
+          });
         } else {
           final snackBar = SnackBar(content: Text('Invalid result read from sender.'));
-          Scaffold.of(innerContext).showSnackBar(snackBar);
+          Scaffold.of(myContext).showSnackBar(snackBar);
         }
       }
     });
@@ -74,7 +84,7 @@ Widget requestForm(context) {
           break;
       }
       final snackBar = SnackBar(content: Text(snackBarText));
-      Scaffold.of(context).showSnackBar(snackBar);
+      Scaffold.of(myContext).showSnackBar(snackBar);
 
       // stop listening to sender's document
       senderSubscription.cancel();

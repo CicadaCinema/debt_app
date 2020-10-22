@@ -7,6 +7,11 @@ import 'misc.dart';
 import 'transaction_dispatch.dart';
 import 'transaction_request.dart';
 
+// create separate class for storing balance so that _MainMenuState can remain private
+class BalanceStore {
+  static double balance;
+}
+
 class MainMenu extends StatefulWidget {
   @override
   _MainMenuState createState() => _MainMenuState();
@@ -42,12 +47,15 @@ class _MainMenuState extends State<MainMenu> {
 
   // keep updating user's username and balance
   void updateBalance() async {
-    Stream ownDocumentStream = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).snapshots();
-    await for (var value in ownDocumentStream) {
-      Map<String, dynamic> retrievedData = value.data();
-      _usernameReadout = '${retrievedData['username']}\'s balance:';
-      _balanceReadout = '£' + value.data()['balance'].toStringAsFixed(2);
-      setState(() {});
+    if (FirebaseAuth.instance.currentUser != null){
+      Stream ownDocumentStream = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).snapshots();
+      await for (var value in ownDocumentStream) {
+        Map<String, dynamic> retrievedData = value.data();
+        _usernameReadout = '${retrievedData['username']}\'s balance:';
+        BalanceStore.balance = value.data()['balance'] * 1.0; // ENSURE this is a double
+        _balanceReadout = '£' + value.data()['balance'].toStringAsFixed(2);
+        setState(() {});
+      }
     }
   }
 

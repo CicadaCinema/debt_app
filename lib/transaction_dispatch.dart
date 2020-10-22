@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'menu.dart';
 import 'misc.dart';
 
 Widget dispatchForm(context) {
@@ -11,26 +12,43 @@ Widget dispatchForm(context) {
   String _recipient;
   double _amount;
 
-  void dispatchRequest(context) {
-    String _uid = FirebaseAuth.instance.currentUser.uid;
-    Future<QuerySnapshot> _future = users
+  void dispatchRequest(myContext) {
+    User userCredential = FirebaseAuth.instance.currentUser;
+    String myDisplayName = userCredential.displayName;
+    Future<QuerySnapshot> recipientFuture = users
         .where('username', isEqualTo: _recipient)
         .get();
 
-    _future.then((QuerySnapshot value) {
-      // TODO: could add a snack bar here instead of explicit popups
-      if (value.size == 0) {
-        showDialogBox('Error processing request', 'Invalid username', context);
-        return;
+    recipientFuture.then((QuerySnapshot value) {
+      // various errors are shown as dialog boxes
+      String errorMessage;
+      if (value.size != 1) {
+        errorMessage = 'Found ${value.size} users with this username.';
+      } else if (value.docs.first.data()['pending'] != true) {
+        errorMessage = 'Receiver is not pending';
+      } else if (value.docs.first.data()['pending_user'] != myDisplayName) {
+        errorMessage = 'Username does not match';
       } else if (value.docs.first.data()['pending_amount'] != _amount) {
-        showDialogBox('Error processing request', 'Amount does not match', context);
+        errorMessage = 'Amount does not match';
       } else {
-        final snackBar = SnackBar(content: Text('Perform transaction here!'));
-        Scaffold.of(context).showSnackBar(snackBar);
+        users.doc(userCredential.uid)
+            .update({
+          'balance': BalanceStore.balance - _amount
+        })
+            .then((value) {
+          final snackBar = SnackBar(content: Text('Transaction performed successfully'));
+          Scaffold.of(myContext).showSnackBar(snackBar);
+            })
+            .catchError((error) {
+              final snackBar = SnackBar(content: Text('Failed to perform transaction'));
+              Scaffold.of(myContext).showSnackBar(snackBar);
+            });
+        return;
       }
+      showDialogBox('Error processing request', errorMessage, myContext);
     })
         .catchError((error) {
-      showDialogBox('Cloud Firestore error', 'Error retrieving data: ' + error.toString(), context);
+      showDialogBox('Cloud Firestore error', 'Error retrieving data: ' + error.toString(), myContext);
     });
   }
 

@@ -76,6 +76,9 @@ class _GatewayPageState extends State<GatewayPage> {
               email: _email,
               password: _password
           );
+          // store display name in user profile - this will not have to be requested from the doc
+          FirebaseAuth.instance.currentUser.updateProfile(displayName: _username);
+
           CollectionReference users = FirebaseFirestore.instance.collection('users');
 
           users
