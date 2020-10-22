@@ -54,8 +54,8 @@ class _MainMenuState extends State<MainMenu> {
   // launch update function before building
   @override
   void initState() {
-    updateBalance();
     super.initState();
+    updateBalance();
   }
 
   @override
