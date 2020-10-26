@@ -4,13 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'misc.dart';
+import 'wallet.dart';
 import 'transaction_dispatch.dart';
 import 'transaction_request.dart';
-
-// create separate class for storing balance so that _MainMenuState can remain private
-class BalanceStore {
-  static double balance;
-}
 
 class MainMenu extends StatefulWidget {
   @override
@@ -19,8 +15,6 @@ class MainMenu extends StatefulWidget {
 
 class _MainMenuState extends State<MainMenu> {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
-  String _usernameReadout = "My balance:";
-  String _balanceReadout = "£0.00";
 
   Map<String, num> _map = {
     "UserA": -99.99,
@@ -43,27 +37,6 @@ class _MainMenuState extends State<MainMenu> {
       ]))
           .toList(),
     );
-  }
-
-  // keep updating user's username and balance
-  void updateBalance() async {
-    if (FirebaseAuth.instance.currentUser != null){
-      Stream ownDocumentStream = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).snapshots();
-      await for (var value in ownDocumentStream) {
-        Map<String, dynamic> retrievedData = value.data();
-        _usernameReadout = '${retrievedData['username']}\'s balance:';
-        BalanceStore.balance = value.data()['balance'] * 1.0; // ENSURE this is a double
-        _balanceReadout = '£' + value.data()['balance'].toStringAsFixed(2);
-        setState(() {});
-      }
-    }
-  }
-
-  // launch update function before building
-  @override
-  void initState() {
-    super.initState();
-    updateBalance();
   }
 
   @override
@@ -91,28 +64,7 @@ class _MainMenuState extends State<MainMenu> {
         body: TabBarView(
           children: [
             Center(
-              child: Column(
-                children: [
-                  Spacer(flex: 3),
-                  //Text('Current route:' + ModalRoute.of(context).settings.name),
-                  Text(
-                    _usernameReadout,
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    _balanceReadout,
-                    style: TextStyle(fontSize: 64, fontWeight: FontWeight.bold),
-                  ),
-                  Spacer(flex: 3),
-                  FlatButton(
-                    onPressed: () {
-                      FirebaseAuth.instance.signOut();
-                    },
-                    child: Text('Sign out'),
-                  ),
-                  Spacer(),
-                ],
-              )
+              child: Wallet(),
             ),
             dispatchForm(context),
             requestForm(context),
