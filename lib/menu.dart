@@ -66,8 +66,8 @@ class _MainMenuState extends State<MainMenu> {
             Center(
               child: Wallet(),
             ),
-            dispatchForm(context),
-            requestForm(context),
+            DispatchScreen(),
+            RequestScreen(),
             Center(
                 child: SingleChildScrollView(
                   child: _showTable(_map),

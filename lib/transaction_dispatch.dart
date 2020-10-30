@@ -5,7 +5,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'wallet.dart';
 import 'misc.dart';
 
-Widget dispatchForm(context) {
+class DispatchScreen extends StatefulWidget {
+  @override
+  _DispatchScreenState createState() => _DispatchScreenState();
+}
+
+class _DispatchScreenState extends State<DispatchScreen> {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   final _formKey = GlobalKey<FormState>();
 
@@ -38,11 +43,11 @@ Widget dispatchForm(context) {
             .then((value) {
           final snackBar = SnackBar(content: Text('Transaction performed successfully'));
           Scaffold.of(myContext).showSnackBar(snackBar);
-            })
+        })
             .catchError((error) {
-              final snackBar = SnackBar(content: Text('Failed to perform transaction'));
-              Scaffold.of(myContext).showSnackBar(snackBar);
-            });
+          final snackBar = SnackBar(content: Text('Failed to perform transaction'));
+          Scaffold.of(myContext).showSnackBar(snackBar);
+        });
         return;
       }
       showDialogBox('Error processing request', errorMessage, myContext);
@@ -52,69 +57,72 @@ Widget dispatchForm(context) {
     });
   }
 
-  return Form(key: _formKey,
-    child: Container(
-      padding: EdgeInsets.all(10),
-      child: Scaffold(
-        body: Builder(
-          // create an inner BuildContext so that the onPressed methods
-          // can refer to the Scaffold with Scaffold.of()
-          builder: (BuildContext innerContext) {
-            return Container(
-              padding: EdgeInsets.all(10),
-              child: Column(
-                children: <Widget>[
-                  Spacer(),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                    child: TextFormField(
-                      validator: (value) {
-                        if (value == '') {
-                          return 'Empty field';
-                        }
-                        _recipient = value;
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Recipient\'s username',
+  @override
+  Widget build(BuildContext context) {
+    return Form(key: _formKey,
+      child: Container(
+        padding: EdgeInsets.all(10),
+        child: Scaffold(
+          body: Builder(
+            // create an inner BuildContext so that the onPressed methods
+            // can refer to the Scaffold with Scaffold.of()
+            builder: (BuildContext innerContext) {
+              return Container(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  children: <Widget>[
+                    Spacer(),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                      child: TextFormField(
+                        validator: (value) {
+                          if (value == '') {
+                            return 'Empty field';
+                          }
+                          _recipient = value;
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Recipient\'s username',
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                    child: TextFormField(
-                      validator: (value) {
-                        if (value == '') {
-                          return 'Empty field';
-                        } else if (!isNumeric(value)) {
-                          return 'Not a number';
-                        }
-                        _amount = double.parse(value);
-                        return null;
-                      },
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Amount',
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                      child: TextFormField(
+                        validator: (value) {
+                          if (value == '') {
+                            return 'Empty field';
+                          } else if (!isNumeric(value)) {
+                            return 'Not a number';
+                          }
+                          _amount = double.parse(value);
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Amount',
+                        ),
                       ),
                     ),
-                  ),
-                  Spacer(flex: 3),
-                  RaisedButton(
-                    child: Text('Submit'),
-                    onPressed: () {
-                      if (_formKey.currentState.validate()) {
-                        dispatchRequest(innerContext);
-                      }
-                    },
-                  ),
-                  Spacer()
-                ],
-              ),
-            );
-          }
-        ),
+                    Spacer(flex: 3),
+                    RaisedButton(
+                      child: Text('Submit'),
+                      onPressed: () {
+                        if (_formKey.currentState.validate()) {
+                          dispatchRequest(innerContext);
+                        }
+                      },
+                    ),
+                    Spacer()
+                  ],
+                ),
+              );
+            }
+          ),
+        )
       )
-    )
-  );
+    );
+  }
 }

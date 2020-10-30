@@ -7,7 +7,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'wallet.dart';
 import 'misc.dart';
 
-Widget requestForm(context) {
+class RequestScreen extends StatefulWidget {
+  @override
+  _RequestScreenState createState() => _RequestScreenState();
+}
+
+class _RequestScreenState extends State<RequestScreen> {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   final _formKey = GlobalKey<FormState>();
 
@@ -92,71 +97,74 @@ Widget requestForm(context) {
     // now this method terminates and onPressed can continue
   }
 
-  // TODO: split this up into multiple parts because the current indentation is just nasty!
-  return Form(key: _formKey,
-    child: Container(
-      padding: EdgeInsets.all(10),
-      child: Scaffold(
-        body: Builder(
-          // create an inner BuildContext so that the onPressed methods
-          // can refer to the Scaffold with Scaffold.of()
-          builder: (BuildContext innerContext) {
-            return Column(
-              children: <Widget>[
-                Spacer(),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                  child: TextFormField(
-                    validator: (value) {
-                      if (value == '') {
-                        return 'Empty field';
-                      }
-                      _sender = value;
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Sender\'s username',
+  @override
+  Widget build(BuildContext context) {
+    // TODO: split this up into multiple parts because the current indentation is just nasty!
+    return Form(key: _formKey,
+      child: Container(
+        padding: EdgeInsets.all(10),
+        child: Scaffold(
+          body: Builder(
+            // create an inner BuildContext so that the onPressed methods
+            // can refer to the Scaffold with Scaffold.of()
+            builder: (BuildContext innerContext) {
+              return Column(
+                children: <Widget>[
+                  Spacer(),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value == '') {
+                          return 'Empty field';
+                        }
+                        _sender = value;
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Sender\'s username',
+                      ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                  child: TextFormField(
-                    validator: (value) {
-                      if (value == '') {
-                        return 'Empty field';
-                      } else if (!isNumeric(value)){
-                        return 'Not a number';
-                      }
-                      _amount = double.parse(value);
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Amount',
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value == '') {
+                          return 'Empty field';
+                        } else if (!isNumeric(value)){
+                          return 'Not a number';
+                        }
+                        _amount = double.parse(value);
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Amount',
+                      ),
                     ),
                   ),
-                ),
-                Spacer(flex: 3),
-                RaisedButton(
-                  child: Text('Submit'),
-                  onPressed: () async {
-                    // this function is async so that _submitEnabled can block multiple requests from coming in at once
-                    // TODO: add an indicator that the request is in progress and the button is unavailable
-                    if (_submitEnabled && _formKey.currentState.validate()) {
-                      _submitEnabled = false;
-                      await receiveRequest(innerContext);
-                      _submitEnabled = true;
-                    }
-                  },
-                ),
-                Spacer()
-              ],
-            );
-          }
+                  Spacer(flex: 3),
+                  RaisedButton(
+                    child: Text('Submit'),
+                    onPressed: () async {
+                      // this function is async so that _submitEnabled can block multiple requests from coming in at once
+                      // TODO: add an indicator that the request is in progress and the button is unavailable
+                      if (_submitEnabled && _formKey.currentState.validate()) {
+                        _submitEnabled = false;
+                        await receiveRequest(innerContext);
+                        _submitEnabled = true;
+                      }
+                    },
+                  ),
+                  Spacer()
+                ],
+              );
+            }
+          )
         )
       )
-    )
-  );
+    );
+  }
 }
