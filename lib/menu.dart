@@ -63,9 +63,7 @@ class _MainMenuState extends State<MainMenu> {
         ),
         body: TabBarView(
           children: [
-            Center(
-              child: Wallet(),
-            ),
+            Wallet(),
             DispatchScreen(),
             RequestScreen(),
             Center(

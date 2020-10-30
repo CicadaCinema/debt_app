@@ -20,7 +20,7 @@ class _WalletState extends State<Wallet> {
   void updateBalance() async {
     if (FirebaseAuth.instance.currentUser != null){
       Stream ownDocumentStream = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).snapshots();
-      await for (var value in ownDocumentStream) {
+      ownDocumentStream.listen((var value) {
         //print("updating");
         Map<String, dynamic> retrievedData = value.data();
         _usernameReadout = '${retrievedData['username']}\'s balance:';
@@ -29,7 +29,7 @@ class _WalletState extends State<Wallet> {
         if (mounted) {
           setState(() {});
         }
-      }
+      });
     }
   }
 
