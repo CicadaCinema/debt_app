@@ -42,8 +42,8 @@ class _DispatchScreenState extends State<DispatchScreen> {
         // update debts map
         myDebts.update(
           _recipient,
-          (var value) => value + _amount,
-          ifAbsent: () => _amount);
+          (var value) => value - _amount,
+          ifAbsent: () => -1 * _amount);
 
         users.doc(userCredential.uid)
             .update({
@@ -51,12 +51,11 @@ class _DispatchScreenState extends State<DispatchScreen> {
           'debts': myDebts,
         })
             .then((value) {
-          final snackBar = SnackBar(content: Text('Transaction performed successfully'));
+          final snackBar = SnackBar(content: Text('Transaction successful'));
           Scaffold.of(myContext).showSnackBar(snackBar);
         })
             .catchError((error) {
-          final snackBar = SnackBar(content: Text('Failed to perform transaction'));
-          Scaffold.of(myContext).showSnackBar(snackBar);
+          showDialogBox('Error updating user doc', "Err04: " + error.toString(), myContext);
         });
         return;
       }

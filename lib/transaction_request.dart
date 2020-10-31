@@ -21,23 +21,31 @@ class _RequestScreenState extends State<RequestScreen> {
   bool _submitEnabled = true;
 
   void receiveRequest(myContext) async {
-    // await the uid of the sender
     String senderUid;
     double senderBalanceGoal;
     Map<String, dynamic> myDebts = Map<String, dynamic>.from(UserDocStore.userDoc['debts']);
-    Future<QuerySnapshot> senderFuture = users
+    bool stillPending = true;
+    bool transactionAttempted = false;
+
+    // request the sender's doc and await the result
+    var senderFuture = await users
         .where('username', isEqualTo: _sender)
         .get();
-    await senderFuture.then((QuerySnapshot value) {
-      if(value.size != 1) {
-        showDialogBox('Error processing request', 'Found ${value.size} users with this username.', myContext);
-        return;
-      }
-      QueryDocumentSnapshot retrievedDoc = value.docs.first;
-      senderUid = retrievedDoc.id;
-      // sender should deduct the agreed amount from their balance
-      senderBalanceGoal = retrievedDoc.data()['balance'] - _amount;
-    });
+
+    // if the number of matching users is NOT 1, show an error message and escape (return)
+    if(senderFuture.size != 1) {
+      showDialogBox('Error processing request', 'Found ${senderFuture.size} users with this username.', myContext);
+      return;
+    }
+
+    // the future returned just one result - success!
+    QueryDocumentSnapshot retrievedDoc = senderFuture.docs.first;
+    senderUid = retrievedDoc.id;
+    // sender should deduct the agreed amount from their balance
+    senderBalanceGoal = retrievedDoc.data()['balance'] - _amount;
+
+    final snackBar = SnackBar(content: Text("Processing request"));
+    Scaffold.of(myContext).showSnackBar(snackBar);
 
     // write out the request - pending status is now true
     User userCredential = FirebaseAuth.instance.currentUser;
@@ -46,36 +54,45 @@ class _RequestScreenState extends State<RequestScreen> {
       'pending': true,
       'pending_user': _sender,
       'pending_amount': _amount
+    })
+        .catchError((error) {
+      showDialogBox('Error updating user doc', "Err01: " + error.toString(), myContext);
     });
 
     // subscribe to changes in the sender's doc
     int subscriptionEventCount = 0;
-    bool transactionCompleted = false;
     Stream<DocumentSnapshot> senderDocumentStream = FirebaseFirestore.instance.collection('users').doc(senderUid).snapshots();
     StreamSubscription<DocumentSnapshot> senderSubscription = senderDocumentStream.listen((event) {
       subscriptionEventCount += 1;
-      if (subscriptionEventCount == 2) {
+      if (subscriptionEventCount == 2 && stillPending) {
         // this is the first time our target user (sender) updated their document since we started listening
         // (one event always fires once the subscription is set up)
         double newBalance = event.data()['balance'] * 1.0; // ENSURE this is a double
         if (newBalance == senderBalanceGoal) {
           // clear own pending status and attempt to perform transaction
+          transactionAttempted = true;
 
           // update debts map
           myDebts.update(
             _sender,
-            (var value) => value - _amount,
-            ifAbsent: () => -1 * _amount);
+            (var value) => value + _amount,
+            ifAbsent: () => _amount);
 
-          users.doc(userCredential.uid)
-              .update({
+          // perform transaction by updating own user doc!
+          users.doc(userCredential.uid).update({
             'balance': BalanceStore.balance + _amount,
             'debts': myDebts,
             'pending': false,
             'pending_user': '',
             'pending_amount': 0,
+          })
+              .then((value) {
+                final snackBar = SnackBar(content: Text('Transaction successful'));
+                Scaffold.of(myContext).showSnackBar(snackBar);
+          })
+              .catchError((error) {
+                showDialogBox('Error updating user doc', "Err02: " + error.toString(), myContext);
           });
-          // TODO: add catchError here
         } else {
           final snackBar = SnackBar(content: Text('Invalid result read from sender.'));
           Scaffold.of(myContext).showSnackBar(snackBar);
@@ -84,21 +101,33 @@ class _RequestScreenState extends State<RequestScreen> {
     });
 
     // wait 20 seconds to time out
-    var timeoutFuture = Future.delayed(Duration(seconds: 20));
+    var timeoutFuture = Future.delayed(Duration(seconds: 10));
     await timeoutFuture.then((value) {
-      // show a snackbar to indicate the outcome after 20 seconds
-      // TODO: show a snackbar once the transaction has gone through - in this case a snackbar after 20 seconds is unnecessary
-      String snackBarText;
-      switch (subscriptionEventCount) {
-        case 0:
-          snackBarText = 'Timed out: no events received from subscription.';
-          break;
-        default:
-          snackBarText = 'Timed out.';
-          break;
+      // show a snackbar if no transaction came through in 10 seconds
+      if (!transactionAttempted) {
+        String snackBarText;
+        switch (subscriptionEventCount) {
+          case 0:
+            snackBarText = 'Timed out: no events received from subscription.';
+            break;
+          default:
+            snackBarText = 'Timed out.';
+            break;
+        }
+        final snackBar = SnackBar(content: Text(snackBarText));
+        Scaffold.of(myContext).showSnackBar(snackBar);
       }
-      final snackBar = SnackBar(content: Text(snackBarText));
-      Scaffold.of(myContext).showSnackBar(snackBar);
+
+      // remove pending state
+      stillPending = false;
+      users.doc(userCredential.uid).update({
+        'pending': false,
+        'pending_user': '',
+        'pending_amount': 0,
+      })
+          .catchError((error) {
+        showDialogBox('Error updating user doc', "Err03: " + error.toString(), myContext);
+      });
 
       // stop listening to sender's document
       senderSubscription.cancel();
