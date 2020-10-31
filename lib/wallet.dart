@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// create separate class for storing balance so that _MainMenuState can remain private
+// separate class for storing balance - any widget can call this and get the balance
 class BalanceStore {
   static double balance;
+}
+
+// separate class for storing the current state of the user doc - any widget can call this and get the doc
+class UserDocStore {
+  static var userDoc;
 }
 
 class Wallet extends StatefulWidget {
@@ -21,10 +26,13 @@ class _WalletState extends State<Wallet> {
     if (FirebaseAuth.instance.currentUser != null){
       Stream ownDocumentStream = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).snapshots();
       ownDocumentStream.listen((var value) {
+        // update global stores
+        BalanceStore.balance = value.data()['balance'] * 1.0; // ENSURE this is a double
+        UserDocStore.userDoc = value.data();
+
         //print("updating");
         Map<String, dynamic> retrievedData = value.data();
         _usernameReadout = '${retrievedData['username']}\'s balance:';
-        BalanceStore.balance = value.data()['balance'] * 1.0; // ENSURE this is a double
         _balanceReadout = '£' + value.data()['balance'].toStringAsFixed(2);
         if (mounted) {
           setState(() {});

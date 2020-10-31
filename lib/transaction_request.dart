@@ -24,6 +24,7 @@ class _RequestScreenState extends State<RequestScreen> {
     // await the uid of the sender
     String senderUid;
     double senderBalanceGoal;
+    Map<String, dynamic> myDebts = Map<String, dynamic>.from(UserDocStore.userDoc['debts']);
     Future<QuerySnapshot> senderFuture = users
         .where('username', isEqualTo: _sender)
         .get();
@@ -58,15 +59,23 @@ class _RequestScreenState extends State<RequestScreen> {
         // (one event always fires once the subscription is set up)
         double newBalance = event.data()['balance'] * 1.0; // ENSURE this is a double
         if (newBalance == senderBalanceGoal) {
-          // clear own pending status and perform transaction
-          // TODO: add to debt
+          // clear own pending status and attempt to perform transaction
+
+          // update debts map
+          myDebts.update(
+            _sender,
+            (var value) => value - _amount,
+            ifAbsent: () => -1 * _amount);
+
           users.doc(userCredential.uid)
               .update({
             'balance': BalanceStore.balance + _amount,
+            'debts': myDebts,
             'pending': false,
             'pending_user': '',
-            'pending_amount': 0
+            'pending_amount': 0,
           });
+          // TODO: add catchError here
         } else {
           final snackBar = SnackBar(content: Text('Invalid result read from sender.'));
           Scaffold.of(myContext).showSnackBar(snackBar);

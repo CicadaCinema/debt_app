@@ -20,6 +20,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
   void dispatchRequest(myContext) {
     User userCredential = FirebaseAuth.instance.currentUser;
     String myDisplayName = userCredential.displayName;
+    Map<String, dynamic> myDebts = Map<String, dynamic>.from(UserDocStore.userDoc['debts']);
     Future<QuerySnapshot> recipientFuture = users
         .where('username', isEqualTo: _recipient)
         .get();
@@ -36,9 +37,18 @@ class _DispatchScreenState extends State<DispatchScreen> {
       } else if (value.docs.first.data()['pending_amount'] != _amount) {
         errorMessage = 'Amount does not match';
       } else {
+        // attempt to perform transaction
+
+        // update debts map
+        myDebts.update(
+          _recipient,
+          (var value) => value + _amount,
+          ifAbsent: () => _amount);
+
         users.doc(userCredential.uid)
             .update({
-          'balance': BalanceStore.balance - _amount
+          'balance': BalanceStore.balance - _amount,
+          'debts': myDebts,
         })
             .then((value) {
           final snackBar = SnackBar(content: Text('Transaction performed successfully'));
