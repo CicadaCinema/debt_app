@@ -7,6 +7,7 @@ import 'misc.dart';
 import 'wallet.dart';
 import 'transaction_dispatch.dart';
 import 'transaction_request.dart';
+import 'detail_menu.dart';
 
 class MainMenu extends StatefulWidget {
   @override
@@ -15,29 +16,6 @@ class MainMenu extends StatefulWidget {
 
 class _MainMenuState extends State<MainMenu> {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
-
-  Map<String, num> _map = {
-    "UserA": -99.99,
-    "UserB": 0.5,
-    "UserC" : 90,
-  };
-
-  // not really sure how this returns a nice table from a map
-  // but it does do that quite nicely
-  Widget _showTable(Map<String, num> inputMap) {
-    return DataTable(
-      columns: const <DataColumn>[
-        DataColumn(label: Text('User')),
-        DataColumn(label: Text('Amount')),
-      ],
-      rows: inputMap.entries
-          .map((e) => DataRow(cells: [
-        DataCell(Text(e.key.toString())),
-        DataCell(Text(e.value.toString())),
-      ]))
-          .toList(),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,11 +44,7 @@ class _MainMenuState extends State<MainMenu> {
             Wallet(),
             DispatchScreen(),
             RequestScreen(),
-            Center(
-                child: SingleChildScrollView(
-                  child: _showTable(_map),
-                )
-            ),
+            DetailMenu(),
           ],
         ),
       ),
