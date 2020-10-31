@@ -27,7 +27,7 @@ void main() {
 }
 
 class FirebaseBuilder extends StatelessWidget {
-  Widget messageScreen(String titleText, IconData icon, Color iconColour, String iconText) {
+  Widget messageScreen(String titleText, Widget icon, String iconText) {
     return Scaffold(
       appBar: AppBar(
         title: Text(titleText),
@@ -35,7 +35,7 @@ class FirebaseBuilder extends StatelessWidget {
       body: Center(
         child:
         Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Icon(icon, size: 64, color: iconColour),
+          icon,
           Text(iconText, textScaleFactor: 2.0),
         ]),
       )
@@ -50,7 +50,7 @@ class FirebaseBuilder extends StatelessWidget {
       builder: (context, snapshot) {
         // check for errors
         if (snapshot.hasError) {
-          return messageScreen('Firebase Error', Icons.error, Colors.orange, 'Error connecting to Firebase');
+          return messageScreen('Firebase Error', Icon(Icons.error, size: 64, color: Colors.orange), 'Error connecting to Firebase');
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
@@ -90,7 +90,7 @@ class FirebaseBuilder extends StatelessWidget {
         }
 
         // show loading screen while waiting for initialization to complete
-        return messageScreen('Connecting to Firebase', Icons.refresh, Colors.green, 'Loading ...');
+        return messageScreen('Connecting to Firebase', Icon(Icons.refresh, size: 64, color: Colors.green), 'Loading ...');
       },
     );
   }

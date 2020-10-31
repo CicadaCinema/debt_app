@@ -46,7 +46,7 @@ class _DetailMenuState extends State<DetailMenu> {
         rows: _map.entries
             .map((e) => DataRow(cells: [
           DataCell(Text(e.key.toString())),
-          DataCell(Text(e.value.toString())),
+          DataCell(Text(e.value.toStringAsFixed(2))),
         ]))
             .toList(),
       ),
