@@ -33,7 +33,12 @@ class _WalletState extends State<Wallet> {
         //print("updating");
         Map<String, dynamic> retrievedData = value.data();
         _usernameReadout = '${retrievedData['username']}\'s balance:';
-        _balanceReadout = '£' + value.data()['balance'].toStringAsFixed(2);
+        // ensure negative sign in the correct position
+        if (value.data()['balance'] < 0) {
+          _balanceReadout = '-£' + (value.data()['balance'] * -1).toStringAsFixed(2);
+        } else {
+          _balanceReadout = '£' + value.data()['balance'].toStringAsFixed(2);
+        }
         if (mounted) {
           setState(() {});
         }

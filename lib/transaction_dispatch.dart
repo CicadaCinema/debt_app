@@ -77,7 +77,6 @@ class _DispatchScreenState extends State<DispatchScreen> {
             // can refer to the Scaffold with Scaffold.of()
             builder: (BuildContext innerContext) {
               return Container(
-                padding: EdgeInsets.all(10),
                 child: Column(
                   children: <Widget>[
                     Spacer(),
