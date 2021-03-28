@@ -52,7 +52,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
         })
             .then((value) {
           final snackBar = SnackBar(content: Text('Transaction successful'));
-          Scaffold.of(myContext).showSnackBar(snackBar);
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         })
             .catchError((error) {
           showDialogBox('Error updating user doc', "Err04: " + error.toString(), myContext);
@@ -115,7 +115,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
                       ),
                     ),
                     Spacer(flex: 3),
-                    RaisedButton(
+                    ElevatedButton(
                       child: Text('Submit'),
                       onPressed: () {
                         if (_formKey.currentState.validate()) {

@@ -45,7 +45,7 @@ class _RequestScreenState extends State<RequestScreen> {
     senderBalanceGoal = retrievedDoc.data()['balance'] - _amount;
 
     final snackBar = SnackBar(content: Text("Processing request"));
-    Scaffold.of(myContext).showSnackBar(snackBar);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
     // write out the request - pending status is now true
     User userCredential = FirebaseAuth.instance.currentUser;
@@ -88,14 +88,14 @@ class _RequestScreenState extends State<RequestScreen> {
           })
               .then((value) {
                 final snackBar = SnackBar(content: Text('Transaction successful'));
-                Scaffold.of(myContext).showSnackBar(snackBar);
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
           })
               .catchError((error) {
                 showDialogBox('Error updating user doc', "Err02: " + error.toString(), myContext);
           });
         } else {
           final snackBar = SnackBar(content: Text('Invalid result read from sender.'));
-          Scaffold.of(myContext).showSnackBar(snackBar);
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       }
     });
@@ -115,7 +115,7 @@ class _RequestScreenState extends State<RequestScreen> {
             break;
         }
         final snackBar = SnackBar(content: Text(snackBarText));
-        Scaffold.of(myContext).showSnackBar(snackBar);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
 
       // remove pending state
@@ -184,7 +184,7 @@ class _RequestScreenState extends State<RequestScreen> {
                     ),
                   ),
                   Spacer(flex: 3),
-                  RaisedButton(
+                  ElevatedButton(
                     child: Text('Submit'),
                     onPressed: () async {
                       // this function is async so that _submitEnabled can block multiple requests from coming in at once
