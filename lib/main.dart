@@ -7,23 +7,21 @@ import 'menu.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    MaterialApp(
-      //title: 'Debt App',
-      theme: ThemeData(
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-        primarySwatch: Colors.green,
-        buttonTheme: ButtonThemeData(
-          buttonColor: Colors.green,
-          textTheme: ButtonTextTheme.primary,
-        ),
+  runApp(MaterialApp(
+    //title: 'Debt App',
+    theme: ThemeData(
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+      primarySwatch: Colors.green,
+      buttonTheme: ButtonThemeData(
+        buttonColor: Colors.green,
+        textTheme: ButtonTextTheme.primary,
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => FirebaseBuilder(),
-      },
-    )
-  );
+    ),
+    initialRoute: '/',
+    routes: {
+      '/': (context) => FirebaseBuilder(),
+    },
+  ));
 }
 
 class FirebaseBuilder extends StatelessWidget {
@@ -33,12 +31,14 @@ class FirebaseBuilder extends StatelessWidget {
         title: Text(titleText),
       ),
       body: Center(
-        child:
-        Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          icon,
-          Text(iconText, textScaleFactor: 2.0),
-        ]),
-      )
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            icon,
+            Text(iconText, textScaleFactor: 2.0),
+          ],
+        ),
+      ),
     );
   }
 
@@ -50,17 +50,21 @@ class FirebaseBuilder extends StatelessWidget {
       builder: (context, snapshot) {
         // check for errors
         if (snapshot.hasError) {
-          return messageScreen('Firebase Error', Icon(Icons.error, size: 64, color: Colors.orange), 'Error connecting to Firebase');
+          return messageScreen(
+              'Firebase Error',
+              Icon(Icons.error, size: 64, color: Colors.orange),
+              'Error connecting to Firebase');
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
           return StreamBuilder<User>(
             stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (BuildContext context, AsyncSnapshot<User> user){
+            builder: (BuildContext context, AsyncSnapshot<User> user) {
               // this is required to prevent the transition from happening multiple times
               // just one condition is unreliable by itself
               bool _displayGateway = true;
-              if (FirebaseAuth.instance.currentUser != null && FirebaseAuth.instance.currentUser.uid != null){
+              if (FirebaseAuth.instance.currentUser != null &&
+                  FirebaseAuth.instance.currentUser.uid != null) {
                 _displayGateway = false;
               }
 
@@ -73,24 +77,31 @@ class FirebaseBuilder extends StatelessWidget {
                 duration: const Duration(milliseconds: 500),
                 child: _newPage,
                 transitionBuilder: (Widget child, Animation<double> animation) {
-                  Animation<Offset> _slideAnimationPage1 = Tween<Offset>(begin: Offset(0.0, 0.0), end: Offset(0.0, _direction)).animate(animation);
-                  Animation<Offset> _slideAnimationPage2 = Tween<Offset>(begin: Offset(0.0, -1*_direction), end: Offset(0.0, 0.0)).animate(animation);
+                  Animation<Offset> _slideAnimationPage1 = Tween<Offset>(
+                          begin: Offset(0.0, 0.0), end: Offset(0.0, _direction))
+                      .animate(animation);
+                  Animation<Offset> _slideAnimationPage2 = Tween<Offset>(
+                          begin: Offset(0.0, -1 * _direction),
+                          end: Offset(0.0, 0.0))
+                      .animate(animation);
                   return Stack(
                     children: <Widget>[
-                      SlideTransition(position: _slideAnimationPage1, child: _previousPage),
-                      SlideTransition(position: _slideAnimationPage2, child: _newPage),
+                      SlideTransition(
+                          position: _slideAnimationPage1, child: _previousPage),
+                      SlideTransition(
+                          position: _slideAnimationPage2, child: _newPage),
                     ],
                   );
                   //return ScaleTransition(child: child, scale: animation);
                 },
-
               );
             },
           );
         }
 
         // show loading screen while waiting for initialization to complete
-        return messageScreen('Connecting to Firebase', Icon(Icons.refresh, size: 64, color: Colors.green), 'Loading ...');
+        return messageScreen('Connecting to Firebase',
+            Icon(Icons.refresh, size: 64, color: Colors.green), 'Loading ...');
       },
     );
   }

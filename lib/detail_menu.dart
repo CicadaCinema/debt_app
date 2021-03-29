@@ -12,8 +12,11 @@ class _DetailMenuState extends State<DetailMenu> {
 
   // keep updating user's debt table
   void updateTable() async {
-    if (FirebaseAuth.instance.currentUser != null){
-      Stream ownDocumentStream = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).snapshots();
+    if (FirebaseAuth.instance.currentUser != null) {
+      Stream ownDocumentStream = FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser.uid)
+          .snapshots();
       ownDocumentStream.listen((var value) {
         //print("updating");
         Map<String, dynamic> retrievedData = value.data();
@@ -45,9 +48,9 @@ class _DetailMenuState extends State<DetailMenu> {
         ],
         rows: _map.entries
             .map((e) => DataRow(cells: [
-          DataCell(Text(e.key.toString())),
-          DataCell(Text(e.value.toStringAsFixed(2))),
-        ]))
+                  DataCell(Text(e.key.toString())),
+                  DataCell(Text(e.value.toStringAsFixed(2))),
+                ]))
             .toList(),
       ),
     );
