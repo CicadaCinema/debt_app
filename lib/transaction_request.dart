@@ -193,6 +193,7 @@ class _RequestScreenState extends State<RequestScreen> {
                       // this function is async so that _submitEnabled can block multiple requests from coming in at once
                       // TODO: add an indicator that the request is in progress and the button is unavailable
                       if (_submitEnabled && _formKey.currentState.validate()) {
+                        _formKey.currentState.reset();
                         _submitEnabled = false;
                         await receiveRequest(innerContext);
                         _submitEnabled = true;

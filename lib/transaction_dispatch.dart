@@ -72,16 +72,22 @@ class _DispatchScreenState extends State<DispatchScreen> {
                           // this is the desired state for a transaction
                           Map<String, dynamic> documentData =
                               snapshot.data.docs[0].data();
-                          return ElevatedButton(
-                            onPressed: () {
-                              dispatchRequest(
-                                  innerContext,
-                                  documentData["username"],
-                                  documentData["pending_amount"]);
-                            },
-                            child: Text(
-                                'Send £${documentData["pending_amount"].toStringAsFixed(2)} to ${documentData["username"]}'),
-                          );
+                          return Column(children: [
+                            Text(
+                                '${documentData["username"]} is requesting £${documentData["pending_amount"].toStringAsFixed(2)} from you.'),
+                            Padding(
+                              padding: EdgeInsets.symmetric(vertical: 20.0),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                dispatchRequest(
+                                    innerContext,
+                                    documentData["username"],
+                                    documentData["pending_amount"]);
+                              },
+                              child: Text('Send'),
+                            )
+                          ]);
                         } else {
                           textMessage = "Err05: Multiple requests in progress.";
                         }
