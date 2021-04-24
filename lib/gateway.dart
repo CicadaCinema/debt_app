@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 Future<String> _getFriendlyName(context) async {
   final _formKey = GlobalKey<FormState>();
-  String _username;
+  late String _username;
 
   // TODO: ensure username is not taken
   await showDialog<void>(
@@ -24,7 +24,7 @@ Future<String> _getFriendlyName(context) async {
                     if (value == '') {
                       return 'Empty field';
                     }
-                    _username = value;
+                    _username = value!;
                     return null;
                   },
                   decoration: InputDecoration(
@@ -40,7 +40,7 @@ Future<String> _getFriendlyName(context) async {
           TextButton(
             child: Text('Submit'),
             onPressed: () {
-              if (_formKey.currentState.validate()){
+              if (_formKey.currentState!.validate()){
                 Navigator.pop(context);
               }
             },
@@ -53,16 +53,16 @@ Future<String> _getFriendlyName(context) async {
   return _username;
 }
 
-class GatewayPage extends StatefulWidget {GatewayPage({Key key}) : super(key: key);
+class GatewayPage extends StatefulWidget {GatewayPage({Key? key}) : super(key: key);
 @override
 _GatewayPageState createState() => _GatewayPageState();
 }
 class _GatewayPageState extends State<GatewayPage> {
   final _formKey = GlobalKey<FormState>();
 
-  String _email;
-  String _password;
-  String _username;
+  late String _email;
+  late String _password;
+  late String _username;
 
   void _enterGateway(String action) async {
     try {
@@ -74,15 +74,15 @@ class _GatewayPageState extends State<GatewayPage> {
               .then((value) => _username = value);
           UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
               email: _email,
-              password: _password
+              password: _password,
           );
           // store display name in user profile - this will not have to be requested from the doc
-          FirebaseAuth.instance.currentUser.updateProfile(displayName: _username);
+          FirebaseAuth.instance.currentUser!.updateProfile(displayName: _username);
 
           CollectionReference users = FirebaseFirestore.instance.collection('users');
 
           users
-              .doc(userCredential.user.uid)
+              .doc(userCredential.user!.uid)
               .set({
             'balance': 0.0,
             'username' : _username,
@@ -96,7 +96,7 @@ class _GatewayPageState extends State<GatewayPage> {
         case 'Login':
           UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
               email: _email,
-              password: _password
+              password: _password,
           );
           break;
         default:
@@ -124,7 +124,7 @@ class _GatewayPageState extends State<GatewayPage> {
                   if (value == '') {
                     return 'Empty field';
                   }
-                  _email=value;
+                  _email=value!;
                   return null;
                 },
                 decoration: InputDecoration(
@@ -140,7 +140,7 @@ class _GatewayPageState extends State<GatewayPage> {
                   if (value == '') {
                     return 'Empty field';
                   }
-                  _password=value;
+                  _password=value!;
                   return null;
                 },
                 decoration: InputDecoration(
@@ -157,7 +157,7 @@ class _GatewayPageState extends State<GatewayPage> {
                 child: Text('Register'),
               ),
               onPressed: () {
-                if (_formKey.currentState.validate()) {
+                if (_formKey.currentState!.validate()) {
                   _enterGateway('Register');
                 }
               },
@@ -168,7 +168,7 @@ class _GatewayPageState extends State<GatewayPage> {
                 child: Text('Login'),
               ),
               onPressed: () {
-                if (_formKey.currentState.validate()) {
+                if (_formKey.currentState!.validate()) {
                   _enterGateway('Login');
                 }
               },

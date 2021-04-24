@@ -16,13 +16,13 @@ class _RequestScreenState extends State<RequestScreen> {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   final _formKey = GlobalKey<FormState>();
 
-  String _sender;
-  double _amount;
+  late String _sender;
+  late double _amount;
   bool _submitEnabled = true;
 
-  void receiveRequest(myContext) async {
-    String senderUid;
-    double senderBalanceGoal;
+  Future receiveRequest(myContext) async {
+    late String senderUid;
+    late double senderBalanceGoal;
     Map<String, dynamic> myDebts =
         Map<String, dynamic>.from(UserDocStore.userDoc['debts']);
     bool stillPending = true;
@@ -48,7 +48,7 @@ class _RequestScreenState extends State<RequestScreen> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
     // write out the request - pending status is now true
-    User userCredential = FirebaseAuth.instance.currentUser;
+    User userCredential = FirebaseAuth.instance.currentUser!;
     users.doc(userCredential.uid).update({
       'pending': true,
       'pending_user': _sender,
@@ -71,7 +71,7 @@ class _RequestScreenState extends State<RequestScreen> {
         // this is the first time our target user (sender) updated their document since we started listening
         // (one event always fires once the subscription is set up)
         double newBalance =
-            event.data()['balance'] * 1.0; // ENSURE this is a double
+            event.data()!['balance'] * 1.0; // ENSURE this is a double
         if (newBalance == senderBalanceGoal) {
           // clear own pending status and attempt to perform transaction
           transactionAttempted = true;
@@ -159,7 +159,7 @@ class _RequestScreenState extends State<RequestScreen> {
                         if (value == '') {
                           return 'Empty field';
                         }
-                        _sender = value;
+                        _sender = value!;
                         return null;
                       },
                       decoration: InputDecoration(
@@ -177,7 +177,7 @@ class _RequestScreenState extends State<RequestScreen> {
                         } else if (!isNumeric(value)) {
                           return 'Not a number';
                         }
-                        _amount = double.parse(value);
+                        _amount = double.parse(value!);
                         return null;
                       },
                       decoration: InputDecoration(
@@ -192,8 +192,8 @@ class _RequestScreenState extends State<RequestScreen> {
                     onPressed: () async {
                       // this function is async so that _submitEnabled can block multiple requests from coming in at once
                       // TODO: add an indicator that the request is in progress and the button is unavailable
-                      if (_submitEnabled && _formKey.currentState.validate()) {
-                        _formKey.currentState.reset();
+                      if (_submitEnabled && _formKey.currentState!.validate()) {
+                        _formKey.currentState!.reset();
                         _submitEnabled = false;
                         await receiveRequest(innerContext);
                         _submitEnabled = true;

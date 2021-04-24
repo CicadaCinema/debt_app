@@ -15,9 +15,10 @@ class _DispatchScreenState extends State<DispatchScreen> {
 
   // performs transaction of a specific amount to specific user
   void dispatchRequest(myContext, recipient, amount) {
-    User userCredential = FirebaseAuth.instance.currentUser;
-    Map<String, dynamic> myDebts =
-        Map<String, dynamic>.from(UserDocStore.userDoc['debts']);
+    User userCredential = FirebaseAuth.instance.currentUser!;
+    // TODO: not sure if this is fine to be null or not
+    Map<String?, dynamic> myDebts =
+        Map<String?, dynamic>.from(UserDocStore.userDoc['debts']);
 
     // attempt to perform transaction
     // update debts map
@@ -55,7 +56,7 @@ class _DispatchScreenState extends State<DispatchScreen> {
                     stream: users
                         .where('pending_user',
                             isEqualTo:
-                                FirebaseAuth.instance.currentUser.displayName)
+                                FirebaseAuth.instance.currentUser!.displayName)
                         .snapshots(),
                     builder: (BuildContext context,
                         AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -64,14 +65,14 @@ class _DispatchScreenState extends State<DispatchScreen> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         textMessage = "Loading...";
                       } else if (snapshot.hasData) {
-                        if (snapshot.data.docs.length == 0) {
+                        if (snapshot.data!.docs.length == 0) {
                           textMessage =
                               "Waiting for requests from other users...";
-                        } else if (snapshot.data.docs.length == 1) {
+                        } else if (snapshot.data!.docs.length == 1) {
                           // YES - there is exactly one request targeted at the user right now
                           // this is the desired state for a transaction
                           Map<String, dynamic> documentData =
-                              snapshot.data.docs[0].data();
+                              snapshot.data!.docs[0].data();
                           return Column(children: [
                             Text(
                                 '${documentData["username"]} is requesting £${documentData["pending_amount"].toStringAsFixed(2)} from you.'),

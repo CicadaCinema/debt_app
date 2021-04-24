@@ -8,14 +8,15 @@ class DetailMenu extends StatefulWidget {
 }
 
 class _DetailMenuState extends State<DetailMenu> {
-  Map<String, dynamic> _map = {};
+  // TODO: is it fine if this is null?????
+  Map<String, dynamic>? _map = {};
 
   // keep updating user's debt table
   void updateTable() async {
     if (FirebaseAuth.instance.currentUser != null) {
       Stream ownDocumentStream = FirebaseFirestore.instance
           .collection('users')
-          .doc(FirebaseAuth.instance.currentUser.uid)
+          .doc(FirebaseAuth.instance.currentUser!.uid)
           .snapshots();
       ownDocumentStream.listen((var value) {
         //print("updating");
@@ -46,7 +47,7 @@ class _DetailMenuState extends State<DetailMenu> {
           DataColumn(label: Text('User')),
           DataColumn(label: Text('Amount')),
         ],
-        rows: _map.entries
+        rows: _map!.entries
             .map((e) => DataRow(cells: [
                   DataCell(Text(e.key.toString())),
                   DataCell(Text(e.value.toStringAsFixed(2))),

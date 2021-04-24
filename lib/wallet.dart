@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 // separate class for storing balance - any widget can call this and get the balance
 class BalanceStore {
-  static double balance;
+  static late double balance;
 }
 
 // separate class for storing the current state of the user doc - any widget can call this and get the doc
@@ -24,7 +24,7 @@ class _WalletState extends State<Wallet> {
   // keep updating user's username and balance
   void updateBalance() async {
     if (FirebaseAuth.instance.currentUser != null){
-      Stream ownDocumentStream = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).snapshots();
+      Stream ownDocumentStream = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).snapshots();
       ownDocumentStream.listen((var value) {
         // update global stores
         BalanceStore.balance = value.data()['balance'] * 1.0; // ENSURE this is a double
