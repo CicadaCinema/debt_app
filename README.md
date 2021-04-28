@@ -1,6 +1,6 @@
 # debt_app
 
-Manage finances in a small, trusted group setting
+Manage personal finances with ease.
 
 ## Note on releases:
 **debt_app** is compiled for the following targets:
