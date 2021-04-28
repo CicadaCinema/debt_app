@@ -28,10 +28,10 @@ class _MainMenuState extends State<MainMenu> {
           child: TabBar(
             indicatorColor: Colors.greenAccent,
             tabs: [
-              Tab(text: 'Wallet', icon: Icon(Icons.account_balance)),
-              Tab(text: 'Send', icon: Icon(Icons.send)),
-              Tab(text: 'Receive', icon: Icon(Icons.done_all)),
-              Tab(text: 'Detail', icon: Icon(Icons.search)),
+              Tab(text: 'Wallet', icon: Icon(Icons.account_balance), key: Key("tab_wallet"),),
+              Tab(text: 'Send', icon: Icon(Icons.send), key: Key("tab_send"),),
+              Tab(text: 'Receive', icon: Icon(Icons.done_all), key: Key("tab_receive"),),
+              Tab(text: 'Detail', icon: Icon(Icons.search), key: Key("tab_detail"),),
             ],
           ),
         ),
