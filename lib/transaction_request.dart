@@ -44,6 +44,15 @@ class _RequestScreenState extends State<RequestScreen> {
     // sender should deduct the agreed amount from their balance
     senderBalanceGoal = retrievedDoc.data()['balance'] - _amount;
 
+    // TODO: stress test this in a real world situation
+    var balanceLimit = 1000000;
+    if ((BalanceStore.balance + _amount).abs() > balanceLimit ||
+        senderBalanceGoal.abs() > balanceLimit) {
+      showDialogBox('Invalid transaction', 'Balance will exceed balance limit.',
+          myContext);
+      return;
+    }
+
     final snackBar = SnackBar(content: Text("Processing request"));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
