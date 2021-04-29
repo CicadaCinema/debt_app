@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'misc.dart';
 import 'wallet.dart';
@@ -38,6 +39,57 @@ class _MainMenuState extends State<MainMenu> {
         appBar: AppBar(
           title: Text('Debt App'),
           automaticallyImplyLeading: false,
+          // TODO: abstract dialog box further in misc.dart
+          actions: <Widget>[
+            PopupMenuButton<String>(
+              onSelected: (String value) {
+                print(value + " button pressed");
+                showDialog<void>(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text("debt_app"),
+                      content: SingleChildScrollView(
+                        child: ListBody(
+                          children: <Widget>[
+                            Text(
+                                "This project is licensed under the The GNU General Public License (Version 3)."),
+                          ],
+                        ),
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text('Source'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            launch(
+                                'https://github.com/ColonisationCaptain/debt_app');
+                          },
+                        ),
+                        TextButton(
+                          child: Text('OK'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              itemBuilder: (BuildContext context) {
+                return {'About'}.map(
+                  (String choice) {
+                    return PopupMenuItem<String>(
+                      value: choice,
+                      child: Text(choice),
+                    );
+                  },
+                ).toList();
+              },
+            ),
+          ],
         ),
         body: TabBarView(
           children: [

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'gateway.dart';
 import 'menu.dart';
+import 'misc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
